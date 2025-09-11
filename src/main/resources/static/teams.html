@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>F1 Teams</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:100}
+    .sheet{width:min(1000px,92vw);background:#151517;border:1px solid #242429;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden}
+    .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #242429}
+    .sheet-body{padding:16px}
+    .xbtn{background:#222;border:1px solid #2a2a30;border-radius:10px;color:#ddd;padding:8px 12px;cursor:pointer}
+
+    .grid-roster{display:grid;grid-template-columns:280px 1fr;gap:16px}
+    .principal-img{width:100%;height:240px;object-fit:cover;border-radius:12px;background:#0f0f12}
+
+    .inline-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .mini{background:#101114;border:1px solid #242429;border-radius:12px;padding:10px;display:flex;gap:10px;align-items:center;cursor:pointer}
+    .mini .avatar{width:70px;height:70px;object-fit:cover;border-radius:10px;background:#0f0f12;flex:0 0 70px}
+    .mini h4{margin:0 0 4px 0}
+    .mini .muted{font-size:.9rem}
+    .mini.sm{cursor:default}
+    .mini.sm .avatar{width:56px;height:56px;border-radius:8px;flex:0 0 56px}
+
+    .seg{display:flex;gap:8px;margin-bottom:0}
+    .seg .btn{padding:8px 12px;border-radius:8px}
+    .hidden{display:none}
+    .tbl{width:100%;border-collapse:separate;border-spacing:0;background:#151517;border:1px solid #242429;border-radius:12px;overflow:hidden}
+    .tbl th,.tbl td{padding:10px 12px;border-bottom:1px solid #242429}
+    .tbl tr:last-child td{border-bottom:none}
+    .history-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+    .pill-btn{background:#101114;border:1px solid #242429;border-radius:999px;padding:6px 10px;cursor:pointer}
+    .clickable{cursor:pointer}
+    .trophy{font-size:1rem;margin-left:6px}
+    .ach-list{margin:8px 0 0 18px;padding:0}
+    .ach-list li{margin:4px 0}
+
+    .logo-wrap{position:relative;height:200px;overflow:hidden;border-top-left-radius:16px;border-top-right-radius:16px;background:#0c0d11}
+    .team-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;filter:brightness(.95)}
+    .logo-wrap::after{content:"";position:absolute;inset:0;pointer-events:none;background:
+      linear-gradient(0deg, rgba(0,0,0,.15), rgba(0,0,0,.15)),
+      repeating-linear-gradient(-35deg, rgba(255,255,255,.04) 0 14px, rgba(255,255,255,0) 14px 28px)}
+
+    .title-line{display:flex;align-items:center;gap:10px}
+    .logo-sm{height:22px;width:auto;object-fit:contain;background:#0b0c10;border-radius:6px;padding:2px 4px}
+  </style>
+</head>
+<body>
+<header class="bar">
+  <div class="nav-wrap">
+    <h1 class="brand">F1 Portal</h1>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="drivers.html">Drivers</a>
+      <a class="active" href="teams.html">Teams</a>
+      <a href="standings.html">Standings</a>
+      <a href="circuits.html">Circuits</a>
+      <a href="/admin">Admin</a>
+
+      <!-- auth-aware bits -->
+      <span id="welcome" style="margin-left:auto;margin-right:12px;"></span>
+      <a id="authLink" href="login.html">Login</a>
+      <a id="registerLink" href="register.html">Register</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <h2>Teams</h2>
+  <div id="grid" class="grid" aria-live="polite"></div>
+</main>
+
+<!-- TEAM MODAL -->
+<div id="overlayTeam" class="overlay" role="dialog" aria-modal="true" aria-labelledby="teamTitle">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="title-line">
+        <img id="teamLogoSm" class="logo-sm" alt="" />
+        <div>
+          <div id="teamTitle" style="font-weight:800"></div>
+          <div class="muted" id="teamSubtitle"></div>
+        </div>
+      </div>
+      <div class="seg">
+        <button id="tabRoster" class="btn secondary">Roster</button>
+        <button id="tabStats" class="btn">Team Stats</button>
+        <button id="tabHistory" class="btn">History</button>
+        <button id="closeTeam" class="xbtn">Close ✕</button>
+      </div>
+    </div>
+    <div class="sheet-body">
+      <div id="viewRoster">
+        <div class="grid-roster">
+          <div><img id="principalImg" class="principal-img" alt="" /></div>
+          <div>
+            <div class="inline-cards" style="margin-bottom:10px">
+              <div class="mini sm" id="principalChip" title="Team Principal">
+                <img class="avatar" id="principalAvatar" loading="lazy" alt="">
+                <div>
+                  <h4 id="principalName" style="margin:0 0 2px 0"></h4>
+                  <div class="muted">Team Principal</div>
+                </div>
+              </div>
+              <div class="mini sm" style="cursor:default">
+                <div>
+                  <h4 style="margin:0 0 2px 0">Constructors' Titles</h4>
+                  <div class="muted" id="teamMeta"></div>
+                </div>
+              </div>
+            </div>
+            <div class="inline-cards" id="driversWrap"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="viewStats" class="hidden">
+        <div class="stats" id="overallStats" style="margin-bottom:10px"></div>
+        <div class="toolbar" style="margin:8px 0">
+          <select id="yearFilter" class="input" style="max-width:220px"></select>
+          <button id="resetYears" class="pill-btn">Reset</button>
+        </div>
+        <table class="tbl" id="yearsTable">
+          <thead><tr><th>Year</th><th>Pos</th><th>Points</th><th>Wins</th><th>Podiums</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div id="viewHistory" class="hidden">
+        <div class="history-list" id="historyList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DRIVER MODAL -->
+<div id="overlayDriver" class="overlay" role="dialog" aria-modal="true" aria-labelledby="driverTitle">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div id="driverTitle" style="font-weight:800"></div>
+      <button id="closeDriver" class="xbtn">Close ✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="grid-roster" style="grid-template-columns:320px 1fr">
+        <img id="driverImg" class="principal-img" alt="">
+        <div>
+          <div class="stats" id="driverTop" style="margin-bottom:10px"></div>
+          <div class="stats">
+            <span class="kv">Podiums <strong id="podiums"></strong></span>
+            <span class="kv">Poles <strong id="poles"></strong></span>
+            <span class="kv">Fastest Laps <strong id="flaps"></strong></span>
+            <span class="kv">Starts <strong id="starts"></strong></span>
+            <span class="kv">Titles <strong id="titles"></strong></span>
+          </div>
+          <div style="margin-top:12px">
+            <h4 style="margin:0 0 6px 0">Achievements</h4>
+            <ul id="achievements" class="ach-list"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(async function(){
+  const [teamsRes, driversRes] = await Promise.all([
+    fetch('data/teams.json?v='+Date.now(), {cache:'no-store'}),
+    fetch('data/drivers.json?v='+Date.now(), {cache:'no-store'})
+  ]);
+  const teams = await teamsRes.json();
+  const drivers = await driversRes.json();
+
+  const norm = s => (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  const as = v => (v===null || v===undefined || v==="") ? "—" : v;
+  const trophy = titles => (Number(titles)>0 ? '<span class="trophy" title="World Champion">🏆</span>' : '');
+
+  /* Car header images */
+  const ICON = {
+    "oracle red bull racing": "rb.avif",
+    "red bull racing": "rb.avif",
+    "red bull": "rb.avif",
+    "scuderia ferrari hp": "ferrari.jpg",
+    "ferrari": "ferrari.jpg",
+    "mercedes-amg petronas f1 team": "merc.jpg",
+    "mercedes": "merc.jpg",
+    "mclaren f1 team": "mclaren.jpg",
+    "mclaren": "mclaren.jpg",
+    "aston martin aramco cognizant": "aston.jpg",
+    "aston martin": "aston.jpg",
+    "bwt alpine f1 team": "alphine.webp",
+    "alpine": "alphine.webp",
+    "visa cash app rb": "alphatauri-at03-1.jpg",
+    "rb": "alphatauri-at03-1.jpg",
+    "stake f1 team kick sauber": "kick sauber.jpeg",
+    "kick sauber": "kick sauber.jpeg",
+    "sauber": "kick sauber.jpeg",
+    "moneygram haas f1 team": "haass.png",
+    "haas": "haass.png",
+    "williams racing": "williams.avif",
+    "williams": "williams.avif"
+  };
+  const logoFor = name => ICON[norm(name)] ? 'img/teams/' + encodeURIComponent(ICON[norm(name)]) : null;
+
+  /* Principal photos */
+  const PRINCIPAL_FILE_BY_TEAM = {
+    "oracle red bull racing": "laurent.jpg",
+    "red bull racing": "laurent.jpg",
+    "red bull": "laurent.jpg",
+
+    "scuderia ferrari hp": "fred.jpg",
+    "ferrari": "fred.jpg",
+
+    "mercedes-amg petronas f1 team": "toto.jpg",
+    "mercedes": "toto.jpg",
+
+    "mclaren f1 team": "andrea.jpg",
+    "mclaren": "andrea.jpg",
+
+    "aston martin aramco cognizant": "andy.jpg",
+    "aston martin": "andy.jpg",
+
+    "bwt alpine f1 team": "flavio.jpg",
+    "alpine": "flavio.jpg",
+
+    "williams racing": "james.jpg",
+    "williams": "james.jpg",
+
+    "stake f1 team kick sauber": "jonathan.jpg",
+    "kick sauber": "jonathan.jpg",
+    "sauber": "jonathan.jpg",
+
+    "visa cash app rb": "alan.jpg",
+    "rb": "alan.jpg",
+
+    "moneygram haas f1 team": "ayao.jpg",
+    "haas": "ayao.jpg"
+  };
+  const principalFileFor = (teamName, principalImageFromJson) => {
+    const file = PRINCIPAL_FILE_BY_TEAM[norm(teamName)];
+    if (file) return `img/teams/${file}`;
+    return principalImageFromJson ? `img/principals/${principalImageFromJson}` : "";
+  };
+
+  /* Driver image overrides */
+  const DRIVER_OVERRIDE = {
+    "alexander albon":"alex.jpg","alex albon":"alex.jpg",
+    "fernando alonso":"alonso.jpg",
+    "charles leclerc":"carles.jpg","leclerc":"carles.jpg",
+    "carlos sainz":"carlos.jpg",
+    "franco colapinto":"franco.jpg",
+    "gabriel bortoleto":"gabriel.jpg","gabriel bortoleto":"gabriel.jpg",
+    "pierre gasly":"Gasly.jpg",
+    "george russell":"george.jpg",
+    "isack hadjar":"isack.jpg",
+    "andrea kimi antonelli":"kimi.jpg","kimi antonelli":"kimi.jpg",
+    "lando norris":"lando.jpg",
+    "lewis hamilton":"lewis.jpg",
+    "liam lawson":"liam.jpg",
+    "max verstappen":"max.jpg",
+    "nico hülkenberg":"nico.jpg","nico hulkenberg":"nico.jpg",
+    "esteban ocon":"ocon.jpg",
+    "oliver bearman":"oliver.jpg",
+    "oscar piastri":"oscar.jpg",
+    "lance stroll":"strolll.jpg",
+    "yuki tsunoda":"yuki.jpg"
+  };
+  function driverImgPath(d){
+    const n = norm(d?.name || "");
+    const override = DRIVER_OVERRIDE[n];
+    if (override) return `img/drivers/${override}`;
+    if (d?.image)  return `img/drivers/${d.image}`;
+    return "";
+  }
+
+  /* Roster overrides */
+  const TEAM_ROSTER_OVERRIDE = {
+    "oracle red bull racing": ["max verstappen", "yuki tsunoda"],
+    "red bull racing": ["max verstappen", "yuki tsunoda"],
+    "red bull": ["max verstappen", "yuki tsunoda"],
+    "rb": ["liam lawson", "isack hadjar"],
+    "visa cash app rb": ["liam lawson", "isack hadjar"],
+    "stake f1 team kick sauber": ["nico hülkenberg", "gabriel bortoleto"],
+    "kick sauber": ["nico hülkenberg", "gabriel bortoleto"]
+  };
+
+  const byDriverId = new Map(drivers.map(d => [d.id, d]));
+  const byDriverName = new Map(drivers.map(d => [norm(d.name), d]));
+
+  const grid = document.getElementById('grid');
+  function teamCard(t){
+    const photo = logoFor(t.name) || logoFor(t.display) || logoFor(t.short);
+    return `
+      <article class="card clickable" data-id="${t.id}">
+        <div class="logo-wrap">
+          ${photo ? `<img class="team-photo" src="${photo}" alt="${t.name} image" loading="lazy" onerror="this.style.display='none'">` : ``}
+        </div>
+        <div class="card-body">
+          <h3>${t.name}</h3>
+          <p class="muted">Principal: ${t.principal || "—"}</p>
+        </div>
+      </article>`;
+  }
+  grid.innerHTML = teams.map(teamCard).join('');
+  grid.querySelectorAll('.card.clickable').forEach(c=>{
+    c.addEventListener('click', ()=> openTeam(teams.find(x=>x.id===c.dataset.id)));
+  });
+
+  const overlayTeam = document.getElementById('overlayTeam');
+  const closeTeam = document.getElementById('closeTeam');
+  const teamLogoSm = document.getElementById('teamLogoSm');
+  const teamTitle = document.getElementById('teamTitle');
+  const teamSubtitle = document.getElementById('teamSubtitle');
+  const principalImg = document.getElementById('principalImg');
+  const principalNameEl = document.getElementById('principalName');
+  const principalAvatar = document.getElementById('principalAvatar');
+  const teamMeta = document.getElementById('teamMeta');
+  const driversWrap = document.getElementById('driversWrap');
+
+  const viewRoster = document.getElementById('viewRoster');
+  const viewStats = document.getElementById('viewStats');
+  const viewHistory = document.getElementById('viewHistory');
+  const tabRoster = document.getElementById('tabRoster');
+  const tabStats = document.getElementById('tabStats');
+  const tabHistory = document.getElementById('tabHistory');
+
+  const overallStats = document.getElementById('overallStats');
+  const yearsTable = document.querySelector('#yearsTable tbody');
+  const yearFilter = document.getElementById('yearFilter');
+  const resetYears = document.getElementById('resetYears');
+  const historyList = document.getElementById('historyList');
+
+  function showRoster(){ viewRoster.classList.remove('hidden'); viewStats.classList.add('hidden'); viewHistory.classList.add('hidden'); }
+  function showStats(){ viewRoster.classList.add('hidden'); viewStats.classList.remove('hidden'); viewHistory.classList.add('hidden'); }
+  function showHistory(){ viewRoster.classList.add('hidden'); viewStats.classList.add('hidden'); viewHistory.classList.remove('hidden'); }
+  tabRoster.onclick = showRoster; tabStats.onclick = showStats; tabHistory.onclick = showHistory;
+
+  function resolveDriversForTeam(t){
+    const teamKey = norm(t.name);
+    const overrideNames = TEAM_ROSTER_OVERRIDE[teamKey];
+    let list = [];
+
+    if (overrideNames) {
+      list = overrideNames.map(n => byDriverName.get(norm(n))).filter(Boolean);
+    } else if (Array.isArray(t.drivers) && t.drivers.length) {
+      list = t.drivers.map(idOrName => {
+        const byId = byDriverId.get(idOrName);
+        if (byId) return byId;
+        return byDriverName.get(norm(String(idOrName)));
+      }).filter(Boolean);
+    }
+
+    if (!list.length) {
+      list = drivers.filter(d => norm(d.team) === teamKey);
+    }
+    return list;
+  }
+
+  function openTeam(t){
+    const logo = logoFor(t.name) || logoFor(t.display) || logoFor(t.short);
+    teamLogoSm.src = logo || ''; teamLogoSm.style.display = logo ? 'block' : 'none';
+
+    teamTitle.textContent = t.name;
+    teamSubtitle.textContent = `Founded: ${t.overall?.founded ?? "—"} • Base: ${t.overall?.base ?? "—"}`;
+
+    const principalPath = principalFileFor(t.name, t.principal_image);
+    principalNameEl.textContent = t.principal || '—';
+
+    if (principalPath){
+      principalImg.src = principalPath;
+      principalAvatar.src = principalPath;
+    } else {
+      principalImg.removeAttribute('src');
+      principalAvatar.removeAttribute('src');
+    }
+    principalImg.alt = t.principal || t.name;
+    principalAvatar.alt = t.principal || t.name;
+    principalImg.onerror = ()=>{ principalImg.replaceWith(Object.assign(document.createElement('div'),{className:'placeholder',style:'height:240px'})); };
+    principalAvatar.onerror = ()=>{ principalAvatar.style.display='none'; };
+
+    teamMeta.textContent = `${t.overall?.constructors_titles ?? "—"}`;
+
+    const teamDrivers = resolveDriversForTeam(t);
+    driversWrap.innerHTML = teamDrivers.map(d => {
+      const img = driverImgPath(d);
+      const sub = `${t.name} • No. ${d.number ?? '—'}`;
+      const name = d.name;
+      return `
+        <div class="mini" data-driver="${encodeURIComponent(d.id)}" title="${name}">
+          ${img ? `<img class="avatar" src="${img}" loading="lazy" alt="${name}" onerror="this.style.display='none'">`
+                : `<div class="avatar" style="background:#0f0f12"></div>`}
+          <div>
+            <h4>${name}${trophy(d.championships)}</h4>
+            <div class="muted">${sub}</div>
+          </div>
+        </div>`;
+    }).join('');
+    driversWrap.querySelectorAll('.mini').forEach(m=>{
+      m.addEventListener('click', ()=>{
+        const key = decodeURIComponent(m.dataset.driver);
+        const d = byDriverId.get(key) || byDriverName.get(norm(key));
+        if (d) openDriver(d);
+      });
+    });
+
+    overallStats.innerHTML = `
+      <span class="kv">Constructors' Titles <strong>${t.overall?.constructors_titles ?? '—'}</strong></span>
+      <span class="kv">Race Wins <strong>${t.overall?.race_wins ?? '—'}</strong></span>
+      <span class="kv">Poles <strong>${t.overall?.poles ?? '—'}</strong></span>
+      <span class="kv">Podiums <strong>${t.overall?.podiums ?? '—'}</strong></span>
+      <span class="kv">Fastest Laps <strong>${t.overall?.fastest_laps ?? '—'}</strong></span>
+    `;
+    const years = (t.yearly || []).map(r => r.year).sort((a,b)=>b-a);
+    yearFilter.innerHTML = `<option value="">All years</option>` + years.map(y=>`<option value="${y}">${y}</option>`).join('');
+    function renderYears(){
+      const y = yearFilter.value;
+      const list = (t.yearly || []).filter(r => !y || String(r.year)===y).sort((a,b)=>b.year-a.year);
+      yearsTable.innerHTML = list.map(r=>`<tr><td>${r.year}</td><td>${r.position ?? '—'}</td><td>${r.points ?? '—'}</td><td>${r.wins ?? '—'}</td><td>${r.podiums ?? '—'}</td></tr>`).join('');
+    }
+    yearFilter.onchange = renderYears;
+    resetYears.onclick = () => { yearFilter.value = ""; renderYears(); };
+    renderYears();
+
+    historyList.innerHTML = (t.driver_history || []).map(h => {
+      const d = byDriverId.get(h.driver_id) || byDriverName.get(norm(h.driver_id));
+      const name = d ? d.name : h.driver_id;
+      const img = d ? driverImgPath(d) : '';
+      const champ = d ? trophy(d.championships) : '';
+      return `
+        <div class="mini" data-driver="${encodeURIComponent(h.driver_id)}" title="Click for stats">
+          ${img ? `<img class="avatar" src="${img}" loading="lazy" alt="${name}" onerror="this.style.display='none'">`
+                : `<div class="avatar" style="background:#0f0f12"></div>`}
+          <div>
+            <h4>${name} ${champ}</h4>
+            <div class="muted">Seasons: ${h.seasons}</div>
+          </div>
+        </div>`;
+    }).join('');
+    historyList.querySelectorAll('.mini').forEach(m=>{
+      m.addEventListener('click', ()=>{
+        const id = decodeURIComponent(m.dataset.driver);
+        const d = byDriverId.get(id) || byDriverName.get(norm(id));
+        if (d) openDriver(d);
+      });
+    });
+
+    showRoster();
+    overlayTeam.style.display = 'flex';
+  }
+
+  function closeTeamModal(){ overlayTeam.style.display = 'none'; }
+  closeTeam.addEventListener('click', closeTeamModal);
+  overlayTeam.addEventListener('click', (e)=>{ if(e.target===overlayTeam) closeTeamModal(); });
+  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeTeamModal(); });
+
+  const overlayDriver = document.getElementById('overlayDriver');
+  const closeDriver = document.getElementById('closeDriver');
+  const driverTitle = document.getElementById('driverTitle');
+  const driverImg = document.getElementById('driverImg');
+  const driverTop = document.getElementById('driverTop');
+  const podiums = document.getElementById('podiums');
+  const poles = document.getElementById('poles');
+  const flaps = document.getElementById('flaps');
+  const starts = document.getElementById('starts');
+  const titles = document.getElementById('titles');
+  const achievements = document.getElementById('achievements');
+
+  function openDriver(d){
+    driverTitle.innerHTML = `${d.name} — ${d.team} ${Number(d.championships)>0 ? '<span class="trophy" title="World Champion">🏆</span>':''}`;
+    const img = driverImgPath(d);
+    if (img) {
+      driverImg.src = img;
+      driverImg.alt = d.name;
+      driverImg.onerror = ()=>{ driverImg.replaceWith(Object.assign(document.createElement('div'),{className:'placeholder',style:'height:320px'})); };
+    }
+    driverTop.innerHTML = `
+      <span class="kv">No. <strong>${as(d.number)}</strong></span>
+      <span class="kv">Nationality <strong>${as(d.nationality)}</strong></span>
+      <span class="kv">Season Pts <strong>${as(d.season_points ?? d.points)}</strong></span>
+    `;
+    podiums.textContent = as(d.career_podiums);
+    poles.textContent = as(d.career_poles);
+    flaps.textContent = as(d.career_fastest_laps);
+    starts.textContent = as(d.gp_starts);
+    titles.textContent = as(d.championships);
+    achievements.innerHTML = (d.achievements && d.achievements.length) ? d.achievements.map(a=>`<li>${a}</li>`).join('') : '<li class="muted">—</li>';
+    overlayDriver.style.display = 'flex';
+  }
+  function closeDriverModal(){ overlayDriver.style.display = 'none'; }
+  closeDriver.addEventListener('click', closeDriverModal);
+  overlayDriver.addEventListener('click', (e)=>{ if(e.target===overlayDriver) closeDriverModal(); });
+  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDriverModal(); });
+})();
+</script>
+
+<!-- mount auth navbar -->
+<script type="module">
+  import { mountNavbar } from "/js/auth.js";
+  mountNavbar({ welcomeId: "welcome", authLinkId: "authLink", registerLinkId: "registerLink" });
+</script>
+</body>
+</html>

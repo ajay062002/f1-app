@@ -1,0 +1,32 @@
+{
+  "news": [
+    {
+      "title": "Ferrari confirm power unit upgrade ahead of Suzuka",
+      "source": "F1.com",
+      "team": "Ferrari",
+      "race": "Japanese GP",
+      "published_at": "2025-08-15T10:20:00Z",
+      "url": "https://example.com/ferrari-upgrade",
+      "image": "img/news/ferrari-upgrade.jpg",
+      "summary": "Team targets better deployment on high-speed sections."
+    },
+    {
+      "title": "McLaren extend driver contract through 2028",
+      "source": "Autosport",
+      "team": "McLaren",
+      "published_at": "2025-08-14T18:05:00Z",
+      "url": "https://example.com/mclaren-contract",
+      "image": "img/news/mclaren-contract.jpg",
+      "summary": "Long-term deal brings stability for the Woking squad."
+    },
+    {
+      "title": "Red Bull bring low-downforce package for Monza",
+      "source": "Motorsport",
+      "team": "Red Bull Racing",
+      "race": "Italian GP",
+      "published_at": "2025-08-13T08:45:00Z",
+      "url": "https://example.com/rb-monza",
+      "image": "img/news/redbull-monza.jpg"
+    }
+  ]
+}

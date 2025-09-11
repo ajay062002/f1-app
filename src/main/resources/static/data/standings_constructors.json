@@ -1,0 +1,12 @@
+[
+  { "pos": 1,  "team_id": "red_bull",     "name": "Red Bull Racing", "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 2,  "team_id": "ferrari",      "name": "Ferrari",          "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 3,  "team_id": "mercedes",     "name": "Mercedes",         "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 4,  "team_id": "mclaren",      "name": "McLaren",          "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 5,  "team_id": "aston_martin", "name": "Aston Martin",     "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 6,  "team_id": "rb",           "name": "RB",               "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 7,  "team_id": "williams",     "name": "Williams",         "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 8,  "team_id": "alpine",       "name": "Alpine",           "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 9,  "team_id": "haas",         "name": "Haas",             "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 10, "team_id": "kick_sauber",  "name": "Kick Sauber",      "pts": 0, "wins": 0, "podiums": 0, "poles": 0 }
+]

@@ -1,0 +1,16 @@
+{
+  "nextRace": {
+    "grandPrix": "Italian Grand Prix",
+    "circuit": "Monza",
+    "country": "Italy",
+    "startTimeUtc": "2025-09-07T13:00:00Z",
+    "circuitId": "monza",
+    "heroImage": "monza.jpg"
+  },
+  "updates": [
+    { "date": "2025-08-17", "tag": "Site",  "title": "Portal UI refresh deployed",      "summary": "New cards, countdown, and searchable driver stats." },
+    { "date": "2025-08-16", "tag": "Data",  "title": "Teams/principals JSON added",       "summary": "Principals now render on the Teams page with image fallbacks." },
+    { "date": "2025-08-15", "tag": "Admin", "title": "Direct backend Admin route",        "summary": "Navbar Admin now opens the backend /admin page." },
+    { "date": "2025-08-17", "tag": "Circuits", "title": "All circuits list available",    "summary": "Search, country filter, and detail pages wired." }
+  ]
+}

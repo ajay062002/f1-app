@@ -1,0 +1,62 @@
+[
+  {"id":"melbourne","name":"Albert Park Circuit","city":"Melbourne","country":"Australia","length_km":5.278,"laps":58,"first_gp_year":1996,"lap_record":{"time":"1:20.235"},"image":"melbourne.jpg","hero":"melbourne-hero.jpg","svgPath":""},
+
+  {"id":"shanghai","name":"Shanghai International Circuit","city":"Shanghai","country":"China","length_km":5.451,"laps":56,"image":"shanghai.jpg","hero":"shanghai-hero.jpg","svgPath":""},
+
+  {"id":"suzuka","name":"Suzuka Circuit","city":"Suzuka","country":"Japan","length_km":5.807,"laps":53,"image":"suzuka.jpg","hero":"suzuka-hero.jpg","svgPath":""},
+
+  {"id":"sakhir","name":"Bahrain International Circuit","city":"Sakhir","country":"Bahrain","length_km":5.412,"laps":57,"image":"bahrain.jpg","hero":"bahrain-hero.jpg","svgPath":""},
+
+  {
+    "id":"jeddah",
+    "name":"Jeddah Corniche Circuit",
+    "city":"Jeddah",
+    "country":"Saudi Arabia",
+    "length_km":6.174,
+    "laps":50,
+    "race_distance_km":308.45,
+    "first_gp_year":2021,
+    "image":"jeddah.jpg",
+    "hero":"jeddah-hero.jpg",
+    "lap_record":{"time":"1:30.734","driver":"Lewis Hamilton","year":2021},
+    "svgPath":"M 60 600 C 120 585, 190 575, 250 575 C 310 575, 360 585, 400 600 C 430 612, 455 612, 475 600 C 500 585, 505 565, 520 540 C 540 508, 565 493, 600 488 C 640 482, 700 488, 735 505 C 765 520, 786 540, 810 565 C 834 590, 860 609, 895 624 C 925 637, 952 640, 970 635 C 985 631, 990 621, 986 605 C 983 592, 972 574, 958 560 C 940 543, 915 528, 892 518 C 870 509, 851 503, 835 494 C 820 486, 807 474, 802 462 C 797 451, 797 439, 802 427 C 806 417, 816 405, 832 394 C 854 378, 888 364, 922 355 L 935 352 C 948 349, 957 344, 960 336 C 963 327, 958 318, 945 312 C 933 306, 912 303, 885 305 C 852 307, 808 318, 772 332 C 742 343, 720 356, 702 372 C 688 385, 678 401, 667 415 C 657 427, 646 437, 631 445 C 614 454, 592 460, 566 463 C 540 466, 516 467, 495 467 C 470 467, 448 465, 428 459 C 406 451, 388 439, 370 424 C 350 406, 329 388, 306 376 C 285 365, 257 360, 227 360 C 196 359, 166 363, 140 371 C 118 377, 102 386, 92 398 C 83 409, 79 420, 78 433 C 76 454, 84 478, 100 501 C 115 522, 140 543, 170 560 C 202 579, 233 590, 260 596 C 290 603, 320 606, 350 606 C 383 606, 410 604, 435 600 C 457 596, 473 590, 490 582 C 506 574, 520 564, 535 554 C 553 542, 572 531, 596 524 C 622 516, 654 513, 688 516 C 721 519, 756 529, 788 546 C 820 562, 850 587, 874 608 C 891 623, 905 635, 915 645 C 922 652, 927 659, 927 664 C 927 671, 922 677, 912 681 C 896 688, 870 688, 838 683 C 804 677, 764 663, 728 647 C 690 630, 658 612, 633 596 C 612 582, 596 569, 579 558 C 563 548, 545 541, 526 538 C 504 534, 478 535, 451 541 C 420 548, 388 561, 358 573 C 332 584, 306 594, 276 599 C 240 606, 200 606, 166 602 C 134 598, 104 589, 84 576 C 67 565, 58 552, 56 538 C 53 519, 58 507, 70 494 C 86 476, 110 462, 140 451 C 168 440, 204 432, 240 430 C 280 428, 320 432, 352 444 C 382 455, 406 472, 430 492 C 456 514, 480 533, 512 545 C 544 557, 585 561, 626 555 C 664 550, 700 536, 728 519 C 760 500, 783 478, 798 456 C 813 434, 818 412, 817 392 C 815 369, 804 348, 785 332 C 760 311, 722 299, 682 297 C 646 295, 607 302, 575 316 C 549 327, 526 345, 508 364 C 493 380, 480 398, 468 417 C 455 439, 441 459, 420 473 C 398 488, 368 497, 334 498 C 299 499, 262 491, 230 474 C 200 458, 176 435, 159 412 C 143 391, 134 368, 132 348 C 130 324, 137 305, 153 288 C 174 266, 208 250, 248 241 C 292 231, 344 230, 392 236 C 448 244, 495 260, 536 281 C 580 304, 616 333, 648 363 C 680 393, 706 424, 741 447 C 778 471, 825 487, 870 494 C 909 500, 944 498, 969 492 C 986 488, 995 482, 996 474 C 998 463, 990 453, 973 444 C 952 432, 920 422, 886 418 C 852 414, 816 415, 784 420 C 748 426, 720 436, 692 449 C 658 465, 632 485, 606 503 C 580 521, 552 536, 518 547 C 484 558, 444 565, 404 565 C 362 564, 321 556, 286 541 C 253 526, 225 504, 204 482 C 182 458, 169 435, 162 416 C 154 394, 153 377, 155 365 C 158 352, 165 342, 176 334 C 193 323, 218 317, 246 314 C 274 311, 306 311, 336 314 C 366 317, 395 324, 420 332 C 451 343, 478 357, 502 372 C 533 391, 560 413, 595 430 C 630 447, 673 458, 718 461 C 760 464, 805 459, 842 449 C 878 439, 908 424, 930 409 C 949 397, 962 385, 970 375"
+  },
+
+  {"id":"miami","name":"Miami International Autodrome","city":"Miami","country":"USA","length_km":5.412,"laps":57,"image":"miami.jpg","hero":"miami-hero.jpg","svgPath":""},
+
+  {"id":"imola","name":"Autodromo Enzo e Dino Ferrari","city":"Imola","country":"Italy","length_km":4.909,"laps":63,"image":"imola.jpg","hero":"imola-hero.jpg","svgPath":""},
+
+  {"id":"monaco","name":"Circuit de Monaco","city":"Monte Carlo","country":"Monaco","length_km":3.337,"laps":78,"image":"monaco.jpg","hero":"monaco-hero.jpg","svgPath":""},
+
+  {"id":"barcelona","name":"Circuit de Barcelona-Catalunya","city":"Montmeló","country":"Spain","length_km":4.657,"laps":66,"image":"barcelona.jpg","hero":"barcelona-hero.jpg","svgPath":""},
+
+  {"id":"montreal","name":"Circuit Gilles Villeneuve","city":"Montréal","country":"Canada","length_km":4.361,"laps":70,"image":"montreal.jpg","hero":"montreal-hero.jpg","svgPath":""},
+
+  {"id":"spielberg","name":"Red Bull Ring","city":"Spielberg","country":"Austria","length_km":4.318,"laps":71,"image":"spielberg.jpg","hero":"spielberg-hero.jpg","svgPath":""},
+
+  {"id":"silverstone","name":"Silverstone Circuit","city":"Towcester","country":"UK","length_km":5.891,"laps":52,"image":"silverstone.jpg","hero":"silverstone-hero.jpg","svgPath":""},
+
+  {"id":"hungaroring","name":"Hungaroring","city":"Budapest","country":"Hungary","length_km":4.381,"laps":70,"image":"hungaroring.jpg","hero":"hungaroring-hero.jpg","svgPath":""},
+
+  {"id":"spa","name":"Circuit de Spa-Francorchamps","city":"Stavelot","country":"Belgium","length_km":7.004,"laps":44,"image":"spa.jpg","hero":"spa-hero.jpg","svgPath":""},
+
+  {"id":"zandvoort","name":"Circuit Zandvoort","city":"Zandvoort","country":"Netherlands","length_km":4.259,"laps":72,"image":"zandvoort.jpg","hero":"zandvoort-hero.jpg","svgPath":""},
+
+  {"id":"monza","name":"Autodromo Nazionale Monza","city":"Monza","country":"Italy","length_km":5.793,"laps":53,"image":"monza.jpg","hero":"monza-hero.jpg","svgPath":""},
+
+  {"id":"baku","name":"Baku City Circuit","city":"Baku","country":"Azerbaijan","length_km":6.003,"laps":51,"image":"baku.jpg","hero":"baku-hero.jpg","svgPath":""},
+
+  {"id":"singapore","name":"Marina Bay Street Circuit","city":"Singapore","country":"Singapore","length_km":4.940,"laps":62,"image":"singapore.jpg","hero":"singapore-hero.jpg","svgPath":""},
+
+  {"id":"austin","name":"Circuit of the Americas","city":"Austin","country":"USA","length_km":5.513,"laps":56,"image":"austin.jpg","hero":"austin-hero.jpg","svgPath":""},
+
+  {"id":"mexico","name":"Autódromo Hermanos Rodríguez","city":"Mexico City","country":"Mexico","length_km":4.304,"laps":71,"image":"mexico.jpg","hero":"mexico-hero.jpg","svgPath":""},
+
+  {"id":"interlagos","name":"Interlagos (José Carlos Pace)","city":"São Paulo","country":"Brazil","length_km":4.309,"laps":71,"image":"interlagos.jpg","hero":"interlagos-hero.jpg","svgPath":""},
+
+  {"id":"vegas","name":"Las Vegas Street Circuit","city":"Las Vegas","country":"USA","length_km":6.201,"laps":50,"image":"vegas.jpg","hero":"vegas-hero.jpg","svgPath":""},
+
+  {"id":"lusail","name":"Lusail International Circuit","city":"Lusail","country":"Qatar","length_km":5.419,"laps":57,"image":"lusail.jpg","hero":"lusail-hero.jpg","svgPath":""},
+
+  {"id":"abudhabi","name":"Yas Marina Circuit","city":"Abu Dhabi","country":"UAE","length_km":5.281,"laps":58,"image":"abudhabi.jpg","hero":"abudhabi-hero.jpg","svgPath":""}
+]

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Circuits • F1 Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    /* --------- Cards --------- */
+    .grid-circuits{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+    .card{border:1px solid var(--border,#242429);border-radius:16px;background:#101114;overflow:hidden;cursor:pointer}
+    .card .thumb{width:100%;height:150px;display:block;background:#0f1014;object-fit:cover}
+    .card-body{padding:12px}
+    .muted{color:#9aa}
+
+    /* ---------- Modal ---------- */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;pointer-events:none}
+    .modal-backdrop.open{display:block;pointer-events:auto}
+    .modal{position:fixed;inset:auto;left:50%;top:52px;transform:translateX(-50%);
+           width:min(1100px,94vw);max-height:86vh;display:none;background:#0b0c10;
+           border:1px solid #23242a;border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+    .modal.open{display:block}
+    .modal-head{display:flex;align-items:center;gap:14px;justify-content:space-between;
+                padding:14px 16px;border-bottom:1px solid #23242a}
+    .title-wrap h3{margin:0 0 4px 0}
+    .title-wrap .muted{font-size:.95rem}
+
+    .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .btn{background:#1a1b20;border:1px solid #2b2c33;border-radius:10px;padding:8px 12px;color:#ddd;cursor:pointer}
+    .btn.primary{background:#e10600;border-color:#e10600;color:#fff}
+    .slider{appearance:none;width:200px;height:6px;border-radius:999px;background:#2a2b32;outline:none}
+    .slider::-webkit-slider-thumb{appearance:none;width:16px;height:16px;border-radius:50%;background:#e10600;cursor:pointer}
+
+    .modal-body{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;padding:16px;overflow:auto}
+    @media (max-width:1000px){ .modal-body{grid-template-columns:1fr} }
+
+    /* Track stage */
+    .stage{position:relative;border:1px solid #23242a;border-radius:16px;background:#0f1014;min-height:320px}
+    .stage .hero{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.18}
+    .stage svg{position:relative;display:block;width:100%;height:420px}
+    .kerb{fill:none;stroke:#000;stroke-width:18}
+    .asphalt{fill:none;stroke:#fff;stroke-width:14}
+    .line{fill:none;stroke:#7a7a7a;stroke-dasharray:10 9;stroke-width:1.4}
+
+    /* Stats panel */
+    .panel{border:1px solid #23242a;border-radius:16px;padding:14px;background:#0f1014}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .big{font-size:1.8rem;font-weight:800}
+    .sep{height:1px;background:#23242a;margin:10px 0}
+    .laps{width:100%;border-collapse:collapse}
+    .laps td,.laps th{border-bottom:1px solid #23242a;padding:6px 8px;text-align:left}
+    .laps tr.best td{font-weight:600}
+
+    /* Keep header clickable when modal is closed */
+    header.bar{position:relative;z-index:2}
+  </style>
+</head>
+<body>
+<header class="bar">
+  <div class="nav-wrap">
+    <h1 class="brand">F1 Portal</h1>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="drivers.html">Drivers</a>
+      <a href="teams.html">Teams</a>
+      <a href="standings.html">Standings</a>
+      <a class="active" href="circuits.html">Circuits</a>
+      <!-- auth-aware pieces -->
+      <span id="welcome" style="margin-left:auto;margin-right:12px;"></span>
+      <a id="authLink" href="login.html">Login</a>
+      <a id="registerLink" href="register.html">Register</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <h2>Circuits</h2>
+  </section>
+
+  <section>
+    <div id="gallery" class="grid-circuits" aria-live="polite">
+      <div class="card"><div class="card-body">Loading circuits…</div></div>
+    </div>
+  </section>
+</main>
+
+<!-- Backdrop + Modal -->
+<div id="backdrop" class="modal-backdrop"></div>
+<div id="pop" class="modal" role="dialog" aria-modal="true" aria-labelledby="cName">
+  <div class="modal-head">
+    <div class="title-wrap">
+      <h3 id="cName">Circuit</h3>
+      <div id="cSub" class="muted"></div>
+    </div>
+    <div class="controls">
+      <button id="startBtn" class="btn primary">Start</button>
+      <button id="stopBtn" class="btn">Stop</button>
+      <button id="resetBtn" class="btn">Reset</button>
+      <div class="muted" style="margin-left:8px">Speed</div>
+      <input id="speed" class="slider" type="range" min="60" max="360" step="10" value="300" />
+      <div id="speedLabel" class="muted">300 km/h</div>
+      <button id="closeBtn" class="btn">Close</button>
+    </div>
+  </div>
+
+  <div class="modal-body">
+    <div class="stage">
+      <img id="trackHero" class="hero" alt="">
+      <svg id="trackSVG" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet">
+        <path id="kerb" class="kerb" d=""></path>
+        <path id="asphalt" class="asphalt" d=""></path>
+        <path id="line" class="line" d=""></path>
+
+        <!-- little car -->
+        <g id="car" transform="translate(0,0) rotate(0)">
+          <g transform="translate(-12,-6) scale(0.55)">
+            <rect x="0" y="2" width="24" height="8" rx="2" fill="#e10600"></rect>
+            <rect x="2" y="0" width="6" height="12" rx="1" fill="#000"></rect>
+            <rect x="16" y="0" width="6" height="12" rx="1" fill="#000"></rect>
+            <circle cx="12" cy="6" r="3" fill="#fff"></circle>
+          </g>
+        </g>
+        <path id="measure" d="" opacity="0"></path>
+      </svg>
+    </div>
+
+    <div class="panel">
+      <div class="split">
+        <div>
+          <div class="muted">Circuit Length</div>
+          <div class="big"><span id="stLen">—</span> km</div>
+        </div>
+        <div>
+          <div class="muted">Number of Laps</div>
+          <div class="big" id="stLaps">—</div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="split">
+        <div>
+          <div class="muted">First Grand Prix</div>
+          <div id="stFirst">—</div>
+        </div>
+        <div>
+          <div class="muted">Race Distance</div>
+          <div><span id="stDist">—</span> km</div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div>
+        <div class="muted">Fastest lap time</div>
+        <div id="stRecord">—</div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="split">
+        <div>
+          <div class="muted">Lap time</div>
+          <div style="font-variant-numeric:tabular-nums"><span id="lapTime">0.0</span> s</div>
+        </div>
+        <div>
+          <div class="muted">Best</div>
+          <div style="font-variant-numeric:tabular-nums" id="bestTime">—</div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+      <h4 style="margin:6px 0">Lap history</h4>
+      <table class="laps" id="lapsTable">
+        <thead><tr><th>#</th><th>Time (s)</th></tr></thead>
+        <tbody><tr><td colspan="2" class="muted">No laps yet.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="js/circuits.js"></script>
+
+<!-- mount auth navbar -->
+<script type="module">
+  import { mountNavbar } from "/js/auth.js";
+  mountNavbar();
+</script>
+</body>
+</html>

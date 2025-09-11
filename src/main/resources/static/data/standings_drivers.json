@@ -1,0 +1,31 @@
+[
+  { "pos": 1,  "driver_id": "max_verstappen",  "name": "Max Verstappen",          "number": 1,  "team_id": "red_bull",   "team_name": "Red Bull Racing", "nationality": "NED", "championships": 3, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 2,  "driver_id": "gabriel_bortoleto","name": "Gabriel Bortoleto",       "number": 5,  "team_id": "red_bull",   "team_name": "Red Bull Racing", "nationality": "BRA", "championships": 0, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+
+  { "pos": 3,  "driver_id": "charles_leclerc",  "name": "Charles Leclerc",         "number": 16, "team_id": "ferrari",    "team_name": "Ferrari",         "nationality": "MON", "championships": 0, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 4,  "driver_id": "lewis_hamilton",   "name": "Lewis Hamilton",          "number": 44, "team_id": "ferrari",    "team_name": "Ferrari",         "nationality": "GBR", "championships": 7, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+
+  { "pos": 5,  "driver_id": "george_russell",   "name": "George Russell",          "number": 63, "team_id": "mercedes",   "team_name": "Mercedes",        "nationality": "GBR", "championships": 0, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 6,  "driver_id": "kimi_antonelli",   "name": "Andrea Kimi Antonelli",   "number": 7,  "team_id": "mercedes",   "team_name": "Mercedes",        "nationality": "ITA", "championships": 0, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+
+  { "pos": 7,  "driver_id": "lando_norris",     "name": "Lando Norris",            "number": 4,  "team_id": "mclaren",    "team_name": "McLaren",         "nationality": "GBR", "championships": 0, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 8,  "driver_id": "oscar_piastri",    "name": "Oscar Piastri",           "number": 81, "team_id": "mclaren",    "team_name": "McLaren",         "nationality": "AUS", "championships": 0, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+
+  { "pos": 9,  "driver_id": "fernando_alonso",  "name": "Fernando Alonso",         "number": 14, "team_id": "aston_martin","team_name": "Aston Martin",   "nationality": "ESP", "championships": 2, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 10, "driver_id": "lance_stroll",     "name": "Lance Stroll",            "number": 18, "team_id": "aston_martin","team_name": "Aston Martin",   "nationality": "CAN", "championships": 0, "pts": 0, "wins": 0, "podiums": 0, "poles": 1 },
+
+  { "pos": 11, "driver_id": "yuki_tsunoda",     "name": "Yuki Tsunoda",            "number": 22, "team_id": "rb",         "team_name": "RB",              "nationality": "JPN", "championships": 0, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 12, "driver_id": "isack_hadjar",     "name": "Isack Hadjar",            "number": 50, "team_id": "rb",         "team_name": "RB",              "nationality": "FRA", "championships": 0, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+
+  { "pos": 13, "driver_id": "alex_albon",       "name": "Alexander Albon",         "number": 23, "team_id": "williams",   "team_name": "Williams",        "nationality": "THA", "championships": 0, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 14, "driver_id": "franco_colapinto", "name": "Franco Colapinto",        "number": 43, "team_id": "williams",   "team_name": "Williams",        "nationality": "ARG", "championships": 0, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+
+  { "pos": 15, "driver_id": "esteban_ocon",     "name": "Esteban Ocon",            "number": 31, "team_id": "alpine",     "team_name": "Alpine",          "nationality": "FRA", "championships": 0, "pts": 0, "wins": 1, "podiums": 0, "poles": 0 },
+  { "pos": 16, "driver_id": "pierre_gasly",     "name": "Pierre Gasly",            "number": 10, "team_id": "alpine",     "team_name": "Alpine",          "nationality": "FRA", "championships": 0, "pts": 0, "wins": 1, "podiums": 0, "poles": 0 },
+
+  { "pos": 17, "driver_id": "oliver_bearman",   "name": "Oliver Bearman",          "number": 87, "team_id": "haas",       "team_name": "Haas",            "nationality": "GBR", "championships": 0, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 },
+  { "pos": 18, "driver_id": "kevin_magnussen",  "name": "Kevin Magnussen",         "number": 20, "team_id": "haas",       "team_name": "Haas",            "nationality": "DNK", "championships": 0, "pts": 0, "wins": 0, "podiums": 1, "poles": 1 },
+
+  { "pos": 19, "driver_id": "nico_hulkenberg",  "name": "Nico Hülkenberg",         "number": 27, "team_id": "kick_sauber","team_name": "Kick Sauber",     "nationality": "GER", "championships": 0, "pts": 0, "wins": 0, "podiums": 0, "poles": 1 },
+  { "pos": 20, "driver_id": "liam_lawson",      "name": "Liam Lawson",             "number": 30, "team_id": "kick_sauber","team_name": "Kick Sauber",     "nationality": "NZL", "championships": 0, "pts": 0, "wins": 0, "podiums": 0, "poles": 0 }
+]

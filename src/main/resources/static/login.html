@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Login</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body class="auth-page">
+  <main class="auth-card">
+    <h1>Sign in</h1>
+
+    <form class="auth-form" onsubmit="return false;">
+      <label for="email">Email</label>
+      <input id="email" type="email" required />
+
+      <label for="password">Password</label>
+      <input id="password" type="password" required />
+
+      <button id="btn" class="auth-btn">Login</button>
+    </form>
+
+    <p id="msg"></p>
+
+    <div class="auth-footer">
+      New here? <a href="/register.html">Create account</a>
+    </div>
+  </main>
+
+<script>
+async function post(url, data){
+  const res = await fetch(url, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(data)
+  });
+  const ct = res.headers.get('content-type')||'';
+  const body = ct.includes('json') ? await res.json() : { message: await res.text() };
+  return { ok: res.ok, body };
+}
+
+document.getElementById('btn').addEventListener('click', async () => {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  const r = await post('/api/auth/login', { email, password });
+  if (r.ok && r.body && r.body.ok) {
+    localStorage.setItem('auth.user', JSON.stringify({
+      email: r.body.email,
+      displayName: r.body.displayName
+    }));
+    window.location.href = '/index.html?login=1';
+  } else {
+    document.getElementById('msg').textContent = r.body?.message || 'Login failed';
+  }
+});
+</script>
+</body>
+</html>

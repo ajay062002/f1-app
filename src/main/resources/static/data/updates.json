@@ -1,0 +1,9 @@
+{
+  "updates": [
+    {"date":"2025-08-15","tag":"Data","title":"Standings refreshed","summary":"Constructor & driver points synced."},
+    {"date":"2025-08-14","tag":"Feature","title":"Circuits page added","summary":"Exact circuit images + Start button to run laps."},
+    {"date":"2025-08-13","tag":"Fix","title":"Image optimization","summary":".webp portraits for faster loads."},
+    {"date":"2025-08-12","tag":"DB","title":"Schema update","summary":"Added circuit refs & lap records."},
+    {"date":"2025-08-10","tag":"UI","title":"New dark theme","summary":"Cleaner cards and tabs."}
+  ]
+}

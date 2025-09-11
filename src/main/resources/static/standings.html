@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>F1 Standings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .tabs{display:flex;gap:10px;margin:14px 0}
+    .tab{
+      background:#101114;border:1px solid var(--border);color:#e7e7ea;
+      padding:8px 12px;border-radius:10px;cursor:pointer
+    }
+    .tab.active{background:var(--panel-2);border-color:#2c2c31}
+    .driver-cell{display:flex;align-items:center;gap:12px}
+    .driver-cell img{width:40px;height:40px;border-radius:10px;object-fit:cover;background:#0f0f12}
+    .team-chip{display:inline-flex;align-items:center;gap:6px;background:#0f0f12;border:1px solid var(--border);border-radius:999px;padding:4px 8px;font-size:.85rem}
+    .muted-small{font-size:.85rem;color:var(--muted)}
+  </style>
+</head>
+<body>
+<header class="bar">
+  <div class="nav-wrap">
+    <h1 class="brand">F1 Portal</h1>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="drivers.html">Drivers</a>
+      <a href="teams.html">Teams</a>
+      <a class="active" href="standings.html">Standings</a>
+      <a href="circuits.html">Circuits</a>
+      <span id="welcome" style="margin-left:auto;margin-right:12px;"></span>
+      <a id="authLink" href="login.html">Login</a>
+      <a id="registerLink" href="register.html">Register</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <h2>Driver standings</h2>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button id="tabDrivers" class="tab active">Drivers</button>
+    <button id="tabConstructors" class="tab">Constructors</button>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <input id="q" class="input" placeholder="Search driver or team..." />
+    <select id="teamFilter" class="input" style="max-width:280px">
+      <option value="">All teams</option>
+    </select>
+  </div>
+
+  <!-- Table -->
+  <table class="table" id="tbl">
+    <thead>
+      <tr>
+        <th style="width:64px">#</th>
+        <th>Driver</th>
+        <th>Team</th>
+        <th style="width:80px">Pts</th>
+        <th style="width:80px">Wins</th>
+        <th style="width:110px">Podiums</th>
+        <th style="width:80px">Poles</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</main>
+
+<script>
+/* ------------ DATA --------------- */
+const DRIVERS = [
+  {name:"Oscar Piastri",    number:81, nat:"AUS", team:"McLaren F1 Team",               img:"oscar.jpg"},
+  {name:"Lando Norris",     number:4,  nat:"GBR", team:"McLaren F1 Team",               img:"lando.jpg"},
+  {name:"Max Verstappen",   number:1,  nat:"NED", team:"Oracle Red Bull Racing",        img:"max.jpg"},
+  {name:"George Russell",   number:63, nat:"GBR", team:"Mercedes-AMG Petronas F1 Team", img:"george.jpg"},
+  {name:"Charles Leclerc",  number:16, nat:"MON", team:"Scuderia Ferrari HP",           img:"carles.jpg"},
+  {name:"Lewis Hamilton",   number:44, nat:"GBR", team:"Scuderia Ferrari HP",           img:"lewis.jpg"},
+  {name:"Kimi Antonelli",   number:12, nat:"ITA", team:"Mercedes-AMG Petronas F1 Team", img:"kimi.jpg"},
+  {name:"Alexander Albon",  number:23, nat:"THA", team:"Williams Racing",               img:"alex.jpg"},
+  {name:"Nico Hülkenberg",  number:27, nat:"GER", team:"Stake F1 Team Kick Sauber",     img:"nico.jpg"},
+  {name:"Esteban Ocon",     number:31, nat:"FRA", team:"MoneyGram Haas F1 Team",        img:"ocon.jpg"},
+  {name:"Fernando Alonso",  number:14, nat:"ESP", team:"Aston Martin Aramco Cognizant", img:"alonso.jpg"},
+  {name:"Lance Stroll",     number:18, nat:"CAN", team:"Aston Martin Aramco Cognizant", img:"strolll.jpg"},
+  {name:"Isack Hadjar",     number:6,  nat:"FRA", team:"Racing Bulls",                  img:"isack.jpg"},
+  {name:"Pierre Gasly",     number:10, nat:"FRA", team:"BWT Alpine F1 Team",            img:"Gasly.jpg"},
+  {name:"Liam Lawson",      number:30, nat:"NZL", team:"Racing Bulls",                  img:"liam.jpg"},
+  {name:"Carlos Sainz",     number:55, nat:"ESP", team:"Williams Racing",               img:"carlos.jpg"},
+  {name:"Gabriel Bortoleto",number:5,  nat:"BRA", team:"Stake F1 Team Kick Sauber",     img:"gabriel.jpg"},
+  {name:"Yuki Tsunoda",     number:22, nat:"JPN", team:"Oracle Red Bull Racing",        img:"yuki.jpg"},
+  {name:"Oliver Bearman",   number:87, nat:"GBR", team:"MoneyGram Haas F1 Team",        img:"oliver.jpg"},
+  {name:"Franco Colapinto", number:43, nat:"ARG", team:"BWT Alpine F1 Team",            img:"franco.jpg"},
+  {name:"Jack Doohan",      number:98, nat:"AUS", team:"BWT Alpine F1 Team",            img:"doohan.jpg"}
+];
+
+/* 2025 snapshot (points + wins/podiums/poles) */
+const POINTS_2025 = [
+  ["Oscar Piastri",    284, 4, 9, 3],
+  ["Lando Norris",     275, 3, 8, 2],
+  ["Max Verstappen",   187, 2, 6, 2],
+  ["George Russell",   172, 1, 5, 1],
+  ["Charles Leclerc",  151, 1, 4, 2],
+  ["Lewis Hamilton",   109, 0, 3, 0],
+  ["Kimi Antonelli",    64, 0, 1, 0],
+  ["Alexander Albon",   54, 0, 0, 0],
+  ["Nico Hülkenberg",   37, 0, 0, 0],
+  ["Esteban Ocon",      27, 0, 0, 0],
+  ["Fernando Alonso",   26, 0, 1, 0],
+  ["Lance Stroll",      26, 0, 0, 0],
+  ["Isack Hadjar",      22, 0, 0, 0],
+  ["Pierre Gasly",      20, 0, 0, 0],
+  ["Liam Lawson",       23, 0, 0, 0],
+  ["Carlos Sainz",      16, 0, 0, 0],
+  ["Gabriel Bortoleto", 14, 0, 0, 0],
+  ["Yuki Tsunoda",       7, 0, 0, 0],
+  ["Oliver Bearman",     8, 0, 0, 0],
+  ["Franco Colapinto",   0, 0, 0, 0],
+  ["Jack Doohan",        0, 0, 0, 0]
+];
+
+/* Team short labels */
+const TEAM_ALIASES = {
+  "Oracle Red Bull Racing":"Red Bull",
+  "Scuderia Ferrari HP":"Ferrari",
+  "Mercedes-AMG Petronas F1 Team":"Mercedes",
+  "McLaren F1 Team":"McLaren",
+  "Aston Martin Aramco Cognizant":"Aston Martin",
+  "Racing Bulls":"Racing Bulls",
+  "Williams Racing":"Williams",
+  "Stake F1 Team Kick Sauber":"Kick Sauber",
+  "MoneyGram Haas F1 Team":"Haas",
+  "BWT Alpine F1 Team":"Alpine"
+};
+
+/* Merge points */
+const pointsMap = new Map(POINTS_2025.map(([n,pts,w,pod,pol])=>[n,{pts,wins:w,podiums:pod,poles:pol}]));
+DRIVERS.forEach(d=>{
+  const s = pointsMap.get(d.name) || {pts:0,wins:0,podiums:0,poles:0};
+  d.pts = s.pts; d.wins = s.wins; d.podiums = s.podiums; d.poles = s.poles;
+});
+
+/* ------------ RENDERING --------------- */
+const tbody = document.getElementById('tbody');
+const q = document.getElementById('q');
+const teamFilter = document.getElementById('teamFilter');
+const tabDrivers = document.getElementById('tabDrivers');
+const tabConstructors = document.getElementById('tabConstructors');
+let currentTab = 'drivers';
+
+/* Populate team filter */
+[...new Set(DRIVERS.map(d=>d.team))].sort().forEach(t=>{
+  const opt = document.createElement('option'); opt.value=t; opt.textContent=t; teamFilter.appendChild(opt);
+});
+
+function renderDrivers(){
+  const query = q.value.trim().toLowerCase();
+  const teamSel = teamFilter.value;
+  const data = DRIVERS
+    .filter(d => (!teamSel || d.team===teamSel) &&
+      (!query || d.name.toLowerCase().includes(query) || d.team.toLowerCase().includes(query)))
+    .sort((a,b)=> b.pts - a.pts);
+
+  document.querySelector('#tbl thead').innerHTML = `
+    <tr>
+      <th style="width:64px">#</th>
+      <th>Driver</th>
+      <th>Team</th>
+      <th style="width:80px">Pts</th>
+      <th style="width:80px">Wins</th>
+      <th style="width:110px">Podiums</th>
+      <th style="width:80px">Poles</th>
+    </tr>
+  `;
+
+  tbody.innerHTML = '';
+  data.forEach((d,idx)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${idx+1}</td>
+      <td>
+        <div class="driver-cell">
+          <img src="img/drivers/${d.img}" alt="${d.name}" onerror="this.style.display='none'">
+          <div>
+            <div><strong>${d.name}</strong></div>
+            <div class="muted-small">No. ${d.number} · ${d.nat}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="team-chip">${TEAM_ALIASES[d.team]||d.team}</span></td>
+      <td><strong>${d.pts}</strong></td>
+      <td>${d.wins}</td>
+      <td>${d.podiums}</td>
+      <td>${d.poles}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function computeConstructors(){
+  const map = new Map();
+  DRIVERS.forEach(d=>{
+    if(!map.has(d.team)){
+      map.set(d.team, { team:d.team, pts:0, wins:0, podiums:0, poles:0 });
+    }
+    const t = map.get(d.team);
+    t.pts += d.pts; t.wins += d.wins; t.podiums += d.podiums; t.poles += d.poles;
+  });
+  return [...map.values()].sort((a,b)=> b.pts - a.pts);
+}
+
+function renderConstructors(){
+  const data = computeConstructors();
+  document.querySelector('#tbl thead').innerHTML = `
+    <tr>
+      <th style="width:64px">#</th>
+      <th>Constructor</th>
+      <th style="width:80px">Pts</th>
+      <th style="width:80px">Wins</th>
+      <th style="width:110px">Podiums</th>
+      <th style="width:80px">Poles</th>
+    </tr>
+  `;
+  tbody.innerHTML = '';
+  data.forEach((t,idx)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${idx+1}</td>
+      <td><strong>${TEAM_ALIASES[t.team]||t.team}</strong></td>
+      <td><strong>${t.pts}</strong></td>
+      <td>${t.wins}</td>
+      <td>${t.podiums}</td>
+      <td>${t.poles}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function switchTo(tab){
+  currentTab = tab;
+  tabDrivers.classList.toggle('active', tab==='drivers');
+  tabConstructors.classList.toggle('active', tab==='constructors');
+  if(tab==='drivers'){ renderDrivers(); }
+  else { q.value=''; teamFilter.value=''; renderConstructors(); }
+}
+
+q.addEventListener('input', ()=>{ if(currentTab==='drivers') renderDrivers(); });
+teamFilter.addEventListener('change', ()=>{ if(currentTab==='drivers') renderDrivers(); });
+tabDrivers.addEventListener('click', ()=>switchTo('drivers'));
+tabConstructors.addEventListener('click', ()=>switchTo('constructors'));
+
+/* Initial */
+switchTo('drivers');
+</script>
+
+<!-- mount auth navbar -->
+<script type="module">
+  import { mountNavbar } from "/js/auth.js";
+  mountNavbar({ welcomeId: "welcome", authLinkId: "authLink", registerLinkId: "registerLink" });
+</script>
+</body>
+</html>

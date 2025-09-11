@@ -1,0 +1,135 @@
+[
+  {
+    "id": "red_bull",
+    "name": "Red Bull Racing",
+    "principal": "Laurent Mekies",
+    "principal_image": "laurent.jpg",
+    "drivers": ["max_verstappen", "yuki_tsunoda"],
+    "overall": { "constructors_titles": 6, "race_wins": 118, "poles": 101, "podiums": 270, "fastest_laps": 95, "founded": 2005, "base": "Milton Keynes, UK" },
+    "yearly": [ { "year": 2025, "position": null, "points": null, "wins": null, "podiums": null } ],
+    "driver_history": [
+      { "driver_id": "sergio_perez", "seasons": "2021–2024" },
+      { "driver_id": "sebastian_vettel", "seasons": "2009–2014" },
+      { "driver_id": "daniel_ricciardo", "seasons": "2014–2018" },
+      { "driver_id": "mark_webber", "seasons": "2007–2013" }
+    ]
+  },
+  {
+    "id": "ferrari",
+    "name": "Ferrari",
+    "principal": "Frédéric Vasseur",
+    "principal_image": "fred.jpg",
+    "drivers": ["charles_leclerc", "lewis_hamilton"],
+    "overall": { "constructors_titles": 16, "race_wins": 243, "poles": 249, "podiums": 800, "fastest_laps": 259, "founded": 1950, "base": "Maranello, Italy" },
+    "yearly": [ { "year": 2025, "position": null, "points": null, "wins": null, "podiums": null } ],
+    "driver_history": [
+      { "driver_id": "michael_schumacher", "seasons": "1996–2006" },
+      { "driver_id": "kimi_raikkonen", "seasons": "2007–2009, 2014–2018" },
+      { "driver_id": "sebastian_vettel", "seasons": "2015–2020" },
+      { "driver_id": "carlos_sainz", "seasons": "2021–2024" }
+    ]
+  },
+  {
+    "id": "mercedes",
+    "name": "Mercedes",
+    "principal": "Toto Wolff",
+    "principal_image": "toto.jpg",
+    "drivers": ["george_russell", "kimi_antonelli"],
+    "overall": { "constructors_titles": 8, "race_wins": 125, "poles": 140, "podiums": 290, "fastest_laps": 90, "founded": 2010, "base": "Brackley, UK" },
+    "yearly": [ { "year": 2025, "position": null, "points": null, "wins": null, "podiums": null } ],
+    "driver_history": [
+      { "driver_id": "lewis_hamilton", "seasons": "2013–2024" },
+      { "driver_id": "valtteri_bottas", "seasons": "2017–2021" },
+      { "driver_id": "nico_rosberg", "seasons": "2010–2016" }
+    ]
+  },
+  {
+    "id": "mclaren",
+    "name": "McLaren",
+    "principal": "Andrea Stella",
+    "principal_image": "andrea.jpg",
+    "drivers": ["lando_norris", "oscar_piastri"],
+    "overall": { "constructors_titles": 8, "race_wins": 183, "poles": 156, "podiums": 500, "fastest_laps": 160, "founded": 1966, "base": "Woking, UK" },
+    "yearly": [ { "year": 2025, "position": null, "points": null, "wins": null, "podiums": null } ],
+    "driver_history": [
+      { "driver_id": "lewis_hamilton", "seasons": "2007–2012" },
+      { "driver_id": "jenson_button", "seasons": "2010–2016" },
+      { "driver_id": "daniel_ricciardo", "seasons": "2021–2022" },
+      { "driver_id": "fernando_alonso", "seasons": "2007, 2015–2018" }
+    ]
+  },
+  {
+    "id": "aston_martin",
+    "name": "Aston Martin",
+    "principal": "Andy Cowell",
+    "principal_image": "andy.jpg",
+    "drivers": ["lance_stroll", "fernando_alonso"],
+    "overall": { "constructors_titles": 0, "race_wins": 0, "poles": 0, "podiums": 0, "fastest_laps": 0, "founded": 2021, "base": "Silverstone, UK" },
+    "yearly": [ { "year": 2025, "position": null, "points": null, "wins": null, "podiums": null } ],
+    "driver_history": []
+  },
+  {
+    "id": "rb",
+    "name": "RB",
+    "principal": "Alan Permane",
+    "principal_image": "alan.jpg",
+    "drivers": ["liam_lawson", "isack_hadjar"],
+    "overall": { "constructors_titles": 0, "race_wins": 2, "poles": 1, "podiums": 5, "fastest_laps": 4, "founded": 2006, "base": "Faenza, Italy" },
+    "yearly": [ { "year": 2025, "position": null, "points": null, "wins": null, "podiums": null } ],
+    "driver_history": [
+      { "driver_id": "daniel_ricciardo", "seasons": "2023–2024" },
+      { "driver_id": "pierre_gasly", "seasons": "2017, 2019–2022" }
+    ]
+  },
+  {
+    "id": "williams",
+    "name": "Williams",
+    "principal": "James Vowles",
+    "principal_image": "james.jpg",
+    "drivers": ["alex_albon", "carlos_sainz"],
+    "overall": { "constructors_titles": 9, "race_wins": 114, "poles": 128, "podiums": 300, "fastest_laps": 133, "founded": 1977, "base": "Grove, UK" },
+    "yearly": [ { "year": 2025, "position": null, "points": null, "wins": null, "podiums": null } ],
+    "driver_history": [
+      { "driver_id": "george_russell", "seasons": "2019–2021" },
+      { "driver_id": "valtteri_bottas", "seasons": "2013–2016" }
+    ]
+  },
+  {
+    "id": "haas",
+    "name": "Haas",
+    "principal": "Ayao Komatsu",
+    "principal_image": "ayao.jpg",
+    "drivers": ["esteban_ocon", "oliver_bearman"],
+    "overall": { "constructors_titles": 0, "race_wins": 0, "poles": 0, "podiums": 1, "fastest_laps": 1, "founded": 2016, "base": "Kannapolis, USA" },
+    "yearly": [ { "year": 2025, "position": null, "points": null, "wins": null, "podiums": null } ],
+    "driver_history": [
+      { "driver_id": "kevin_magnussen", "seasons": "2017–2020, 2022–2024" },
+      { "driver_id": "mick_schumacher", "seasons": "2021–2022" }
+    ]
+  },
+  {
+    "id": "alpine",
+    "name": "Alpine",
+    "principal": "Flavio Briatore",
+    "principal_image": "flavio.jpg",
+    "drivers": ["pierre_gasly", "franco_colapinto"],
+    "overall": { "constructors_titles": 2, "race_wins": 21, "poles": 20, "podiums": 100, "fastest_laps": 15, "founded": 2021, "base": "Enstone, UK" },
+    "yearly": [ { "year": 2025, "position": null, "points": null, "wins": null, "podiums": null } ],
+    "driver_history": [
+      { "driver_id": "fernando_alonso", "seasons": "2021–2022" }
+    ]
+  },
+  {
+    "id": "kick_sauber",
+    "name": "Kick Sauber",
+    "principal": "Jonathan Wheatley",
+    "principal_image": "jonathan.jpg",
+    "drivers": ["nico_hulkenberg", "gabriel_bortoleto"],
+    "overall": { "constructors_titles": 0, "race_wins": 1, "poles": 1, "podiums": 27, "fastest_laps": 7, "founded": 1993, "base": "Hinwil, Switzerland" },
+    "yearly": [ { "year": 2025, "position": null, "points": null, "wins": null, "podiums": null } ],
+    "driver_history": [
+      { "driver_id": "kimi_raikkonen", "seasons": "2001, 2019–2021" },
+      { "driver_id": "valtteri_bottas", "seasons": "2022–2024" }
+    ]
+  }
+]

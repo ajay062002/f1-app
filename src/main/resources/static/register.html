@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Create account</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body class="auth-page">
+  <main class="auth-card">
+    <h1>Create an account</h1>
+
+    <form class="auth-form" onsubmit="return false;">
+      <label for="name">Name</label>
+      <input id="name" type="text" required />
+
+      <label for="email">Email</label>
+      <input id="email" type="email" required />
+
+      <label for="password">Password</label>
+      <input id="password" type="password" minlength="8" required />
+
+      <button id="btn" class="auth-btn">Register</button>
+    </form>
+
+    <p id="msg"></p>
+
+    <div class="auth-footer">
+      Already have an account? <a href="/login.html">Login</a>
+    </div>
+  </main>
+
+<script>
+async function post(url, data){
+  const res = await fetch(url, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(data)
+  });
+  const ct = res.headers.get('content-type')||'';
+  const body = ct.includes('json') ? await res.json() : { message: await res.text() };
+  return { ok: res.ok, body };
+}
+
+document.getElementById('btn').addEventListener('click', async () => {
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+
+  const r = await post('/api/auth/register', { name, email, password });
+  if (r.ok && r.body && r.body.ok) {
+    window.location.href = '/login.html?registered=1';
+  } else {
+    document.getElementById('msg').textContent = r.body?.message || 'Registration failed';
+  }
+});
+</script>
+</body>
+</html>
