@@ -44,8 +44,7 @@ export DB_PASS=your_db_password
 export MAIL_USER=your_gmail@gmail.com
 export MAIL_PASS=your_16_char_gmail_app_pass
 ```
-
-✅ These values are used automatically in `application.properties`.
+ These values are used automatically in `application.properties`.
 
 ---
 
