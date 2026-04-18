@@ -58,6 +58,7 @@
       <span id="welcome" style="margin-left:auto;margin-right:12px;"></span>
       <a id="authLink" href="/login.html">Login</a>
 	  <a id="registerLink" href="/register.html">Register</a>
+      <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">☀️</button>
     </nav>
   </div>
 </header>
@@ -208,6 +209,25 @@ function render(dist){
   });
   input.addEventListener('keydown', e => { if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send.click(); } });
 })();
+</script>
+
+<!-- ===== Dark/Light theme toggle ===== -->
+<script>
+  const toggle = document.getElementById('themeToggle');
+  const saved = localStorage.getItem('theme') || 'dark';
+  if (saved === 'light') { document.documentElement.setAttribute('data-theme','light'); toggle.textContent='🌙'; }
+  toggle.addEventListener('click', () => {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    if (isLight) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme','dark');
+      toggle.textContent='☀️';
+    } else {
+      document.documentElement.setAttribute('data-theme','light');
+      localStorage.setItem('theme','light');
+      toggle.textContent='🌙';
+    }
+  });
 </script>
 
 <!-- ===== Auth navbar + hero greeting ===== -->
