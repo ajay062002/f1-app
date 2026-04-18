@@ -43,17 +43,17 @@
 <body>
 <header class="bar">
   <div class="nav-wrap">
-    <h1 class="brand">F1 Portal</h1>
+    <h1 class="brand">Aj F1 Live</h1>
     <nav class="nav">
       <a href="index.html">Home</a>
       <a class="active" href="drivers.html">Drivers</a>
       <a href="teams.html">Teams</a>
       <a href="standings.html">Standings</a>
       <a href="circuits.html">Circuits</a>
-      <a id="registerLink" href="register.html">Register</a>
       <span id="welcome" style="margin-left:auto;margin-right:12px;"></span>
       <a id="authLink" href="login.html">Login</a>
-	  <a id="registerLink" href="/register.html">Register</a>
+      <a id="registerLink" href="register.html">Register</a>
+      <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">☀️</button>
     </nav>
   </div>
 </header>
@@ -154,6 +154,17 @@ function closeModal(){ overlay.style.display = 'none'; }
 closeBtn.addEventListener('click', closeModal);
 overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeModal(); });
 window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+</script>
+
+<script>
+const themeToggle = document.getElementById('themeToggle');
+const savedTheme = localStorage.getItem('theme') || 'dark';
+if (savedTheme === 'light') { document.documentElement.setAttribute('data-theme','light'); themeToggle.textContent='🌙'; }
+themeToggle.addEventListener('click', () => {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  if (isLight) { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme','dark'); themeToggle.textContent='☀️'; }
+  else { document.documentElement.setAttribute('data-theme','light'); localStorage.setItem('theme','light'); themeToggle.textContent='🌙'; }
+});
 </script>
 </body>
 </html>
