@@ -89,7 +89,7 @@
     try{
       const r = await fetch('/api/chat/ask', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ question: q })
+        body: JSON.stringify({ message: q })
       });
       const data = await r.json().catch(()=> ({}));
       typing(false);
