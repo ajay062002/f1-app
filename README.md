@@ -1,33 +1,48 @@
 # Aj F1 Live – Spring Boot F1 Portal
 
-A Spring Boot web app with:
-- Live F1 pages (drivers, teams, standings, circuits)
-- User registration & authentication
-- Email notifications (welcome + weekly digest before races)
-- Built with **Java 17 + Spring Boot + MySQL**
+A full-stack F1 web application built with Java Spring Boot and vanilla JS. Includes live driver/team/standings pages, a circuit simulator, user authentication, and automated email notifications.
 
 ---
 
-## 🚀 Setup Instructions
+## Features
 
-### 1. Prerequisites
-- Java 17 (or compatible JDK)
-- Maven (`mvn -v`)
+- **Drivers** — grid of all 2025/26 drivers with stats modal (team, number, nationality)
+- **Teams** — team cards with roster, year-by-year stats, and driver history tabs
+- **Standings** — driver and constructor standings with search and team filter
+- **Circuits** — animated F1 circuit simulator with lap timer and lap history
+- **Authentication** — user registration, login/logout, JWT session
+- **Email Notifications** — welcome email on registration + weekly race digest (Friday 6 PM)
+- **AI Chatbot** — floating assistant powered by `/api/chat/ask` endpoint
+- **Light/Dark Mode** — theme toggle persisted in localStorage across all pages
+- **Countdown** — live countdown to next race loaded from `f1-data.json`
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Backend | Java 17, Spring Boot (Web, JPA, Mail, Scheduler) |
+| Database | MySQL 8 |
+| Frontend | HTML / CSS / Vanilla JS |
+| Auth | Spring Security + JWT |
+| Email | JavaMailSender (Gmail SMTP) |
+
+---
+
+## Setup
+
+### Prerequisites
+- Java 17+
+- Maven
 - MySQL 8+
-- (Optional) ngrok – for sharing the app online
 
----
-
-### 2. Database
-Create the database in MySQL:
+### 1. Create the database
 ```sql
 CREATE DATABASE f1_portal;
 ```
 
----
-
-### 3. Environment Variables
-Set these before running the app.
+### 2. Set environment variables
 
 **Windows PowerShell:**
 ```powershell
@@ -44,58 +59,51 @@ export DB_PASS=your_db_password
 export MAIL_USER=your_gmail@gmail.com
 export MAIL_PASS=your_16_char_gmail_app_pass
 ```
- These values are used automatically in `application.properties`.
 
----
-
-### 4. Gmail App Password
-- Enable **2-Step Verification** on your Gmail account  
-- Generate a **16-character App Password**  
-- Use that as `MAIL_PASS`
-
----
-
-### 5. Run the App
-From the project root (`pom.xml` is here):
+### 3. Run
 ```bash
 mvn spring-boot:run
 ```
+
 Visit: [http://localhost:1947/index.html](http://localhost:1947/index.html)
 
 ---
 
-## 📩 Email Features
-- **Welcome Email** → Sent automatically when a new user registers  
-- **Weekly Digest** → Scheduled every Friday at 6 PM  
-- **Manual Test** → `GET http://localhost:1947/api/test/digest`  
-- **Custom Test Email** → `GET http://localhost:1947/api/test/send?to=someone@example.com`  
+## Gmail App Password
+
+1. Enable **2-Step Verification** on your Gmail account
+2. Generate a **16-character App Password**
+3. Use that as `MAIL_PASS`
 
 ---
 
-## 🌍 Share Your App (with ngrok)
-Start ngrok:
+## Email Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| Auto on register | Welcome email |
+| Every Friday 6 PM | Weekly race digest |
+| `GET /api/test/digest` | Trigger digest manually |
+| `GET /api/test/send?to=email@example.com` | Send test email |
+
+---
+
+## Share with ngrok
 ```bash
 ngrok http 1947
 ```
-Use the HTTPS URL shown by ngrok to share your app publicly.
 
 ---
 
-## ⚡ Common Issues
-- **DB connection fails** → Check `DB_USER/DB_PASS`, ensure DB exists  
-- **Email not sending** → Use Gmail App Password, check spam  
-- **Port in use** → Change `server.port` in `application.properties`  
-- **CORS issues** → Use ngrok HTTPS link  
+## Common Issues
+
+- **DB connection fails** → Check `DB_USER`/`DB_PASS`, ensure `f1_portal` database exists
+- **Email not sending** → Use a Gmail App Password (not your account password)
+- **Port in use** → Change `server.port` in `application.properties`
+- **CORS issues** → Use the ngrok HTTPS URL
 
 ---
 
-## 🛠 Tech Stack
-- Java 17  
-- Spring Boot (Web, JPA, Mail, Scheduler)  
-- MySQL  
-- HTML/CSS/JS  
+## Author
 
----
-
-## 👤 Author
-Ajay — AI-assisted (GPT) development to speed up integration and fixes.
+[Ajay Thota](https://github.com/ajay062002)
