@@ -126,10 +126,25 @@
 document.getElementById('heroBanner').style.backgroundImage =
   'url("https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?q=80&w=1600&auto=format&fit=crop")';
 
-/* ===== Precise countdown (aligned to second) ===== */
+/* ===== Dynamic countdown from f1-data.json ===== */
 const banner = document.getElementById('heroBanner');
-const raceUTC = banner.getAttribute('data-race-utc') || "2025-09-15T13:00:00Z";
-const raceDate = new Date(raceUTC).getTime();
+let raceDate = new Date(banner.getAttribute('data-race-utc') || "2026-05-10T20:00:00Z").getTime();
+
+// Fetch next race data dynamically
+fetch('/data/f1-data.json')
+  .then(r => r.json())
+  .then(data => {
+    const race = data.nextRace;
+    if (!race) return;
+    raceDate = new Date(race.startTimeUtc).getTime();
+    document.getElementById('eventChip').textContent = race.grandPrix;
+    document.getElementById('locChip').textContent = race.circuit;
+    try {
+      const fmt = new Intl.DateTimeFormat(undefined,{weekday:'short',year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',timeZoneName:'short'});
+      document.getElementById('localTime').textContent = "Local start: " + fmt.format(new Date(race.startTimeUtc));
+    } catch(_) {}
+  })
+  .catch(() => {});
 const cdD = document.getElementById('cdD');
 const cdH = document.getElementById('cdH');
 const cdM = document.getElementById('cdM');
