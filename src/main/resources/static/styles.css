@@ -11,6 +11,34 @@
   --shadow:0 10px 30px rgba(0,0,0,.35);
 }
 
+/* ===== Light mode ===== */
+[data-theme="light"] {
+  --bg:#f4f4f6;
+  --panel:#ffffff;
+  --panel-2:#f0f0f3;
+  --border:#dddde3;
+  --text:#111114;
+  --muted:#6b7280;
+  --brand:#ef4444;
+  --ok:#16a34a;
+  --warn:#ca8a04;
+  --shadow:0 10px 30px rgba(0,0,0,.10);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  background:none;
+  border:1px solid var(--border);
+  border-radius:999px;
+  color:var(--text);
+  padding:5px 10px;
+  cursor:pointer;
+  font-size:.85rem;
+  margin-left:12px;
+  transition:background .2s;
+}
+.theme-toggle:hover { background:var(--panel-2); }
+
 /* Global resets */
 * { box-sizing:border-box; }
 img { display:block; max-width:100%; }
