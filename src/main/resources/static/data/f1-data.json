@@ -1,11 +1,11 @@
 {
   "nextRace": {
-    "grandPrix": "Italian Grand Prix",
-    "circuit": "Monza",
-    "country": "Italy",
-    "startTimeUtc": "2025-09-07T13:00:00Z",
-    "circuitId": "monza",
-    "heroImage": "monza.jpg"
+    "grandPrix": "Miami Grand Prix",
+    "circuit": "Miami International Autodrome",
+    "country": "USA",
+    "startTimeUtc": "2026-05-10T20:00:00Z",
+    "circuitId": "miami",
+    "heroImage": "miami.jpg"
   },
   "updates": [
     { "date": "2025-08-17", "tag": "Site",  "title": "Portal UI refresh deployed",      "summary": "New cards, countdown, and searchable driver stats." },
