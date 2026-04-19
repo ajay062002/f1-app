@@ -1,4 +1,4 @@
-# Aj F1 Live – Spring Boot F1 Portal
+#  F1 Live – Spring Boot F1 Portal
 
 A full-stack F1 web application built with Java Spring Boot and vanilla JS. Includes live driver/team/standings pages, a circuit simulator, user authentication, and automated email notifications.
 
