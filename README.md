@@ -1,20 +1,18 @@
 #  F1 Live – Spring Boot F1 Portal
 
-A full-stack F1 web application built with Java Spring Boot and vanilla JS. Includes live driver/team/standings pages, a circuit simulator, user authentication, and automated email notifications.
+A full-stack F1 fan portal with live driver and team data, standings, a circuit lap simulator, JWT authentication, weekly race digest emails, and an AI chatbot.
 
 ---
 
-## Features
+## What it does
 
-- **Drivers** — grid of all 2025/26 drivers with stats modal (team, number, nationality)
-- **Teams** — team cards with roster, year-by-year stats, and driver history tabs
+- **Drivers & Teams** — grid of all 2025 drivers with stats modals; team cards with roster, year-by-year stats, driver history tabs
 - **Standings** — driver and constructor standings with search and team filter
-- **Circuits** — animated F1 circuit simulator with lap timer and lap history
-- **Authentication** — user registration, login/logout, JWT session
-- **Email Notifications** — welcome email on registration + weekly race digest (Friday 6 PM)
-- **AI Chatbot** — floating assistant powered by `/api/chat/ask` endpoint
-- **Light/Dark Mode** — theme toggle persisted in localStorage across all pages
-- **Countdown** — live countdown to next race loaded from `f1-data.json`
+- **Circuits** — animated circuit simulator with lap timer and history
+- **Auth** — register, login, JWT session (BCrypt password hashing)
+- **Email** — welcome email on registration; automated weekly race digest every Friday at 6 PM via `@Scheduled`
+- **AI Chatbot** — floating assistant answering F1 questions (drivers, stats, rules, teammates)
+- **Light/Dark mode** — theme toggle persisted in localStorage
 
 ---
 
@@ -22,20 +20,53 @@ A full-stack F1 web application built with Java Spring Boot and vanilla JS. Incl
 
 | Layer | Technology |
 |-------|-----------|
-| Backend | Java 17, Spring Boot (Web, JPA, Mail, Scheduler) |
+| Backend | Java 17, Spring Boot (Web, JPA, Mail, Security, Scheduler) |
 | Database | MySQL 8 |
 | Frontend | HTML / CSS / Vanilla JS |
-| Auth | Spring Security + JWT |
+| Auth | Spring Security + JWT (BCrypt) |
 | Email | JavaMailSender (Gmail SMTP) |
 
 ---
 
-## Setup
+## Project Structure
+
+```
+src/main/java/com/example/f1app/
+├── config/
+│   ├── SecurityConfig.java       # JWT filter chain, CORS, password encoder
+│   ├── WebConfig.java            # MVC config
+│   └── GlobalExceptionHandler.java
+│
+├── controller/
+│   ├── AuthController.java       # /api/auth/register, /login, /me
+│   ├── DriverController.java     # /api/drivers
+│   ├── TeamController.java       # /api/teams
+│   ├── StandingsController.java  # /api/standings
+│   ├── CircuitController.java    # /api/circuits
+│   ├── ChatController.java       # /api/chat/ask
+│   ├── NewsletterController.java # /api/newsletter/send-weekly
+│   ├── LiveController.java       # /api/live
+│   └── dto/                      # Request/response DTOs
+│
+├── service/
+│   ├── ChatService.java          # F1 question routing logic
+│   ├── ChatData.java             # Static F1 data (drivers, teams, stats)
+│   ├── EmailService.java         # Welcome + custom emails via JavaMailSender
+│   ├── NewsletterService.java    # Bulk send logic, user filtering, debug stats
+│   ├── WeeklyDigestJob.java      # @Scheduled Friday 6PM digest
+│   └── UserService.java
+│
+├── model/                        # JPA entities (User, Driver, Team, Circuit...)
+├── repository/                   # Spring Data JPA repositories
+└── F1AppApplication.java
+```
+
+---
+
+## Running Locally
 
 ### Prerequisites
-- Java 17+
-- Maven
-- MySQL 8+
+- Java 17+, Maven, MySQL 8
 
 ### 1. Create the database
 ```sql
@@ -49,7 +80,7 @@ CREATE DATABASE f1_portal;
 $env:DB_USER="root"
 $env:DB_PASS="your_db_password"
 $env:MAIL_USER="your_gmail@gmail.com"
-$env:MAIL_PASS="your_16_char_gmail_app_pass"
+$env:MAIL_PASS="your_16_char_app_password"
 ```
 
 **Linux/macOS:**
@@ -57,7 +88,7 @@ $env:MAIL_PASS="your_16_char_gmail_app_pass"
 export DB_USER=root
 export DB_PASS=your_db_password
 export MAIL_USER=your_gmail@gmail.com
-export MAIL_PASS=your_16_char_gmail_app_pass
+export MAIL_PASS=your_16_char_app_password
 ```
 
 ### 3. Run
@@ -65,45 +96,30 @@ export MAIL_PASS=your_16_char_gmail_app_pass
 mvn spring-boot:run
 ```
 
-Visit: [http://localhost:1947/index.html](http://localhost:1947/index.html)
+Open [http://localhost:1947/index.html](http://localhost:1947/index.html)
+
+> Gmail requires a 16-character **App Password** (not your account password). Enable 2-Step Verification first, then generate one at myaccount.google.com → Security → App passwords.
 
 ---
 
-## Gmail App Password
+## API Endpoints
 
-1. Enable **2-Step Verification** on your Gmail account
-2. Generate a **16-character App Password**
-3. Use that as `MAIL_PASS`
-
----
-
-## Email Endpoints
-
-| Endpoint | Description |
-|----------|-------------|
-| Auto on register | Welcome email |
-| Every Friday 6 PM | Weekly race digest |
-| `GET /api/test/digest` | Trigger digest manually |
-| `GET /api/test/send?to=email@example.com` | Send test email |
-
----
-
-## Share with ngrok
-```bash
-ngrok http 1947
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/register` | Register + sends welcome email |
+| POST | `/api/auth/login` | Login, returns session |
+| GET | `/api/auth/me` | Current session info |
+| GET | `/api/drivers` | All drivers |
+| GET | `/api/teams` | All teams |
+| GET | `/api/standings` | Driver + constructor standings |
+| GET | `/api/circuits` | Circuit list |
+| POST | `/api/chat/ask` | AI chatbot query |
+| POST | `/api/newsletter/send-weekly` | Trigger digest email to all users |
+| GET | `/api/newsletter/all-users` | User list (admin) |
+| GET | `/api/test/digest` | Manually trigger weekly digest |
 
 ---
 
-## Common Issues
+## Source
 
-- **DB connection fails** → Check `DB_USER`/`DB_PASS`, ensure `f1_portal` database exists
-- **Email not sending** → Use a Gmail App Password (not your account password)
-- **Port in use** → Change `server.port` in `application.properties`
-- **CORS issues** → Use the ngrok HTTPS URL
-
----
-
-## Author
-
-[Ajay Thota](https://github.com/ajay062002)
+[github.com/ajay062002/f1-app](https://github.com/ajay062002/f1-app)

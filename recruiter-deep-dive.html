@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ajay Thota — Technical Deep Dive</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --blue: #58a6ff;
+    --green: #3fb950;
+    --orange: #d29922;
+    --purple: #bc8cff;
+    --red: #f85149;
+    --teal: #39d353;
+    --pink: #ff7b72;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.7; display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  #sidebar { width: 260px; min-height: 100vh; background: var(--bg2); border-right: 1px solid var(--border); position: fixed; top: 0; left: 0; overflow-y: auto; padding: 20px 0; z-index: 100; }
+  #sidebar .logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+  #sidebar .logo h2 { font-size: 15px; color: var(--blue); }
+  #sidebar .logo p { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  #sidebar a { display: block; padding: 7px 20px; color: var(--muted); text-decoration: none; font-size: 13px; border-left: 3px solid transparent; transition: all 0.15s; }
+  #sidebar a:hover, #sidebar a.active { color: var(--text); background: var(--bg3); border-left-color: var(--blue); }
+  #sidebar .section-label { padding: 14px 20px 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+
+  /* Main */
+  #main { margin-left: 260px; padding: 40px 48px; max-width: 1100px; }
+
+  /* Hero */
+  .hero { border: 1px solid var(--border); border-radius: 12px; padding: 32px; background: var(--bg2); margin-bottom: 40px; }
+  .hero h1 { font-size: 28px; font-weight: 700; color: #fff; }
+  .hero p { color: var(--muted); margin-top: 8px; max-width: 720px; }
+  .hero .tags { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .tag.blue { background: rgba(88,166,255,0.12); color: var(--blue); border: 1px solid rgba(88,166,255,0.3); }
+  .tag.green { background: rgba(63,185,80,0.12); color: var(--green); border: 1px solid rgba(63,185,80,0.3); }
+  .tag.orange { background: rgba(210,153,34,0.12); color: var(--orange); border: 1px solid rgba(210,153,34,0.3); }
+  .tag.purple { background: rgba(188,140,255,0.12); color: var(--purple); border: 1px solid rgba(188,140,255,0.3); }
+  .tag.red { background: rgba(248,81,73,0.12); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+
+  /* Section headers */
+  h2.section-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  h3.card-title { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+
+  /* Project cards */
+  .project-section { margin-bottom: 56px; scroll-margin-top: 80px; }
+  .project-card { border: 1px solid var(--border); border-radius: 10px; background: var(--bg2); overflow: hidden; margin-bottom: 16px; }
+  .project-card .card-header { padding: 20px 24px; background: var(--bg3); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+  .project-card .card-body { padding: 24px; }
+
+  /* Architecture box */
+  .arch-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin: 16px 0; font-family: 'Courier New', monospace; font-size: 12px; color: var(--teal); line-height: 1.8; overflow-x: auto; }
+
+  /* Flow steps */
+  .flow { margin: 16px 0; }
+  .flow-step { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .flow-step:last-child { border-bottom: none; }
+  .step-num { min-width: 26px; height: 26px; border-radius: 50%; background: var(--blue); color: #000; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+  .step-text { color: var(--text); font-size: 13px; }
+  .step-text strong { color: #fff; }
+  .step-text code { background: var(--bg3); padding: 1px 6px; border-radius: 4px; font-size: 11px; color: var(--purple); }
+
+  /* Subsections */
+  .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  @media (max-width: 700px) { .sub-grid { grid-template-columns: 1fr; } }
+  .sub-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .sub-card h4 { font-size: 13px; font-weight: 700; color: var(--orange); margin-bottom: 10px; }
+  .sub-card ul { padding-left: 16px; }
+  .sub-card ul li { color: var(--muted); font-size: 13px; margin-bottom: 4px; }
+  .sub-card ul li strong { color: var(--text); }
+
+  /* Term glossary */
+  .glossary-section { margin-bottom: 56px; scroll-margin-top: 80px; }
+  .term-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+  .term-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .term-card .term-name { font-size: 14px; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
+  .term-card .term-what { font-size: 12px; color: var(--text); margin-bottom: 8px; }
+  .term-card .term-where { font-size: 11px; color: var(--muted); }
+  .term-card .term-where span { display: inline-block; background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; margin: 2px 2px 2px 0; color: var(--green); }
+
+  /* Security pills */
+  .security-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .sec-pill { padding: 5px 12px; border-radius: 6px; font-size: 12px; background: rgba(248,81,73,0.1); color: var(--red); border: 1px solid rgba(248,81,73,0.2); }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--border); margin: 32px 0; }
+
+  /* Inline code */
+  code { background: var(--bg3); padding: 2px 6px; border-radius: 4px; font-size: 12px; color: var(--purple); font-family: 'Courier New', monospace; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13px; }
+  th { background: var(--bg3); color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td:first-child { color: var(--blue); font-weight: 600; }
+
+  /* Search */
+  #search { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-size: 13px; margin-bottom: 20px; outline: none; }
+  #search:focus { border-color: var(--blue); }
+
+  p { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+  p strong { color: var(--text); }
+
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+  .badge.live { background: rgba(63,185,80,0.15); color: var(--green); }
+  .badge.ml { background: rgba(188,140,255,0.15); color: var(--purple); }
+  .badge.research { background: rgba(210,153,34,0.15); color: var(--orange); }
+  .badge.work { background: rgba(88,166,255,0.15); color: var(--blue); }
+
+  .highlight { background: rgba(88,166,255,0.07); border-left: 3px solid var(--blue); padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 13px; color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav id="sidebar">
+  <div class="logo">
+    <h2>Ajay Thota</h2>
+    <p>Technical Deep Dive · Recruiter Prep</p>
+  </div>
+
+  <div class="section-label">Experience</div>
+  <a href="#helperkit">HelperKit — STEM Solutions</a>
+
+  <div class="section-label">Projects</div>
+  <a href="#ccc">Career Command Center</a>
+  <a href="#signlang">Sign Language Detection</a>
+  <a href="#resumebuilder">Resume Builder</a>
+  <a href="#attendance">Attendance System</a>
+  <a href="#elearning">E-Learning Analysis</a>
+  <a href="#f1app">F1 App</a>
+
+  <div class="section-label">ML Breakdown</div>
+  <a href="#ml-breakdown">What ML Do I Actually Have?</a>
+
+  <div class="section-label">Resume Terms</div>
+  <a href="#glossary-langs">Languages</a>
+  <a href="#glossary-frameworks">Frameworks</a>
+  <a href="#glossary-tools">Dev Tools</a>
+  <a href="#glossary-db">Databases & Cloud</a>
+</nav>
+
+<!-- Main Content -->
+<div id="main">
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Technical Deep Dive — Ajay Thota</h1>
+    <p>Every project explained end-to-end: architecture, data flow, security, tools, and where each resume term was actually used. Built for recruiter conversations.</p>
+    <div class="tags">
+      <span class="tag blue">Full-Stack</span>
+      <span class="tag purple">Machine Learning</span>
+      <span class="tag green">Backend Engineering</span>
+      <span class="tag orange">Data Pipelines</span>
+      <span class="tag red">Real-Time Systems</span>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────── HELPERKIT ───── -->
+  <div class="project-section" id="helperkit">
+    <h2 class="section-title">🏢 STEM Solutions LLC — HelperKit <span class="badge work">Current Job</span><span class="badge live">Live</span></h2>
+
+    <div class="project-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">HelperKit — Real-Time AI Transcription App</h3>
+          <p style="margin:4px 0 0;font-size:12px;">helperkit.live &nbsp;·&nbsp; Node.js · Express · WebSocket · React · Firebase · AWS EC2 · Deepgram · OpenAI</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="tag blue">Node.js</span><span class="tag green">WebSocket</span><span class="tag purple">AI APIs</span><span class="tag orange">AWS</span>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <p><strong>What it is:</strong> A web app for live speech-to-text captioning during interviews or lectures. Multiple viewers can watch captions in real time, and at the end of a session they get an AI-generated summary. Achieves sub-200ms transcription latency.</p>
+
+        <h4 style="color:var(--orange);margin:18px 0 8px;">System Architecture</h4>
+        <div class="arch-box">
+[Browser (Speaker)]
+    |  MediaRecorder API captures mic audio
+    |  WebSocket connection (ws://)
+    v
+[Node.js + Express Server  — AWS EC2]
+    |  Receives raw audio chunks
+    |  Streams audio to Deepgram STT API
+    |  Deepgram returns transcript text
+    |  Writes text → Firebase Realtime DB
+    |  After session: sends full transcript → OpenAI API → summary
+    v
+[Firebase Realtime DB]
+    |  Syncs in real-time to all connected viewers
+    v
+[Browser (Viewers)]
+    React.js frontend — listens to Firebase,
+    renders captions live as they arrive
+
+[nginx  ←→  Node.js]   (reverse proxy, port 80/443)
+[PM2]                   (process manager, auto-restart)
+[Let's Encrypt SSL]     (HTTPS cert, auto-renew)</div>
+
+        <h4 style="color:var(--orange);margin:18px 0 8px;">End-to-End Flow — Step by Step</h4>
+        <div class="flow">
+          <div class="flow-step"><div class="step-num">1</div><div class="step-text"><strong>User opens helperkit.live</strong> — nginx receives HTTPS request, proxies to Node.js on internal port. React app loads in browser.</div></div>
+          <div class="flow-step"><div class="step-num">2</div><div class="step-text"><strong>Speaker starts session</strong> — browser requests mic access via <code>getUserMedia()</code>. <code>MediaRecorder API</code> starts capturing audio in small chunks (e.g. 250ms intervals).</div></div>
+          <div class="flow-step"><div class="step-num">3</div><div class="step-text"><strong>WebSocket connection opens</strong> — React client opens a persistent <code>WebSocket</code> connection to the Node.js server. This keeps a live bidirectional pipe open — no HTTP request overhead per audio chunk.</div></div>
+          <div class="flow-step"><div class="step-num">4</div><div class="step-text"><strong>Audio streams to server</strong> — each audio chunk is sent as binary data over the WebSocket. Server receives chunks and immediately forwards them to the <strong>Deepgram STT API</strong> via Deepgram's streaming WebSocket.</div></div>
+          <div class="flow-step"><div class="step-num">5</div><div class="step-text"><strong>Deepgram transcribes</strong> — Deepgram's ML models convert speech → text in near-real-time. Returns JSON with transcription text and confidence scores. This is where the sub-200ms latency comes from — streaming, not batch.</div></div>
+          <div class="flow-step"><div class="step-num">6</div><div class="step-text"><strong>Text written to Firebase</strong> — server pushes each transcript segment to <code>Firebase Realtime Database</code>. Firebase pushes the update to all connected viewer clients instantly via its own WebSocket layer.</div></div>
+          <div class="flow-step"><div class="step-num">7</div><div class="step-text"><strong>Viewers see live captions</strong> — React frontend listens on Firebase path with <code>onValue()</code>. When new text arrives, it updates the DOM. Works for unlimited concurrent viewers with no extra server load (Firebase handles fan-out).</div></div>
+          <div class="flow-step"><div class="step-num">8</div><div class="step-text"><strong>Session ends → AI summary</strong> — Node.js collects the full session transcript, sends it to <strong>OpenAI API</strong> (e.g. GPT-4) with a summarization prompt. Returns a structured summary displayed to the user.</div></div>
+        </div>
+
+        <div class="sub-grid">
+          <div class="sub-card">
+            <h4>Security</h4>
+            <ul>
+              <li><strong>HTTPS/SSL</strong> via Let's Encrypt — all traffic encrypted</li>
+              <li><strong>nginx reverse proxy</strong> — Node.js port never exposed publicly</li>
+              <li><strong>Firebase security rules</strong> — controls who can read/write sessions</li>
+              <li><strong>API keys</strong> (Deepgram, OpenAI) stored as server env vars, never in frontend</li>
+              <li><strong>PM2</strong> ensures process restarts on crash — no downtime window</li>
+            </ul>
+          </div>
+          <div class="sub-card">
+            <h4>Why These Tools?</h4>
+            <ul>
+              <li><strong>WebSocket over HTTP polling</strong> — 10–50× lower latency for streaming audio</li>
+              <li><strong>Deepgram</strong> over Whisper — streaming API, lower latency than batch models</li>
+              <li><strong>Firebase</strong> for viewer sync — zero backend code needed for fan-out to many viewers</li>
+              <li><strong>React</strong> — reactive UI updates naturally when Firebase data changes</li>
+              <li><strong>PM2</strong> — production process manager, handles restarts and logs</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight">💬 Recruiter talking point: "The key engineering challenge was keeping latency under 200ms while supporting concurrent users. WebSocket streaming to Deepgram avoids batch-processing delays, and Firebase handles viewer fan-out so my server isn't the bottleneck when many people watch simultaneously."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────── CAREER COMMAND CENTER ───── -->
+  <div class="project-section" id="ccc">
+    <h2 class="section-title">💼 Career Command Center <span class="badge live">Live · ajaylive.com</span></h2>
+
+    <div class="project-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Full-Stack Job Application Tracker + AI Resume Tailor</h3>
+          <p style="margin:4px 0 0;font-size:12px;">Angular 17 · Django REST Framework · PostgreSQL · Token Auth · AI API · Railway</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="tag blue">Angular 17</span><span class="tag green">Django REST</span><span class="tag orange">PostgreSQL</span><span class="tag purple">AI</span>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <p><strong>What it is:</strong> A live web app to track job applications end-to-end — status pipeline (Applied → Screened → Interview → Offer), reminders, analytics, and an AI module that rewrites your resume bullets to match a job description.</p>
+
+        <h4 style="color:var(--orange);margin:18px 0 8px;">System Architecture</h4>
+        <div class="arch-box">
+[Angular 17 SPA — Frontend]
+    |  TypeScript components, services, RxJS observables
+    |  HTTP calls with Authorization: Token header
+    v
+[Django REST Framework — Backend API]
+    |  Views/Serializers handle business logic
+    |  DRF TokenAuthentication validates every request
+    |  Role-based access: admin vs regular user
+    |  ORM queries → PostgreSQL
+    |  AI endpoint → calls Anthropic API → returns tailored text
+    v
+[PostgreSQL — Database]
+    |  Tables: User, Job, Application, Resume, Notification
+    |  Token table: maps token string → user
+    v
+[Railway — Deployment]
+    |  Django app + PostgreSQL instance hosted
+    |  Environment variables for secrets (DB URL, API keys)
+    |  WhiteNoise serves static files</div>
+
+        <h4 style="color:var(--orange);margin:18px 0 8px;">End-to-End Flow</h4>
+        <div class="flow">
+          <div class="flow-step"><div class="step-num">1</div><div class="step-text"><strong>User registers/logs in</strong> — Angular sends POST to <code>/api/login/</code>. Django validates credentials, returns an auth token string. Angular stores token in memory/localStorage.</div></div>
+          <div class="flow-step"><div class="step-num">2</div><div class="step-text"><strong>Every API call is authenticated</strong> — Angular's HTTP interceptor attaches <code>Authorization: Token abc123</code> header to every request. Django's <code>TokenAuthentication</code> class looks up the token, identifies the user, rejects if invalid.</div></div>
+          <div class="flow-step"><div class="step-num">3</div><div class="step-text"><strong>Job application added</strong> — Angular form → POST <code>/api/jobs/</code> → Django serializer validates data → ORM writes to PostgreSQL <code>jobs</code> table. Foreign key to user ensures isolation.</div></div>
+          <div class="flow-step"><div class="step-num">4</div><div class="step-text"><strong>RTR pipeline / status update</strong> — user drags job card to new stage → PATCH request → Django updates <code>status</code> field in DB. Angular updates UI from the response without full reload.</div></div>
+          <div class="flow-step"><div class="step-num">5</div><div class="step-text"><strong>Analytics dashboard</strong> — Angular calls <code>/api/analytics/</code> → Django aggregates DB data (counts by status, by date, etc.) → returns JSON → Angular renders charts.</div></div>
+          <div class="flow-step"><div class="step-num">6</div><div class="step-text"><strong>AI resume tailor</strong> — user pastes a job description → Angular POSTs to <code>/api/tailor/</code> → Django builds a prompt with user's existing resume + JD → calls AI API → streams response back → Angular displays rewritten bullets.</div></div>
+          <div class="flow-step"><div class="step-num">7</div><div class="step-text"><strong>Admin panel</strong> — superuser login → Django admin UI → can view all users, manage job postings, and notifications. Role check happens at the view level with <code>IsAdminUser</code> permission class.</div></div>
+        </div>
+
+        <div class="sub-grid">
+          <div class="sub-card">
+            <h4>Security</h4>
+            <ul>
+              <li><strong>Token-based auth</strong> — stateless, works well for SPA + API separation</li>
+              <li><strong>Role-based access</strong> — admin vs user permissions enforced at every view</li>
+              <li><strong>Django ORM</strong> — parameterized queries prevent SQL injection by default</li>
+              <li><strong>CORS policy</strong> — only Angular origin is whitelisted</li>
+              <li><strong>Env vars on Railway</strong> — DB URL, secret key, API keys never in source code</li>
+              <li><strong>HTTPS</strong> — Railway provides SSL by default</li>
+            </ul>
+          </div>
+          <div class="sub-card">
+            <h4>PostgreSQL Schema Design</h4>
+            <ul>
+              <li><strong>User table</strong> — email, hashed password, role, profile data</li>
+              <li><strong>Job table</strong> — company, role, status, dates, user FK</li>
+              <li><strong>Token table</strong> — DRF managed, maps token → user</li>
+              <li><strong>Resume table</strong> — sections stored as JSON fields</li>
+              <li><strong>Notification table</strong> — reminders with due dates</li>
+              <li>Foreign keys enforce ownership — user X can't read user Y's jobs</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight">💬 Recruiter talking point: "I separated the frontend and backend completely — Angular is a pure SPA that only talks to the Django REST API via tokens. This means they can be scaled and deployed independently. The AI tailoring module is an internal endpoint only — the API key never touches the client."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────── SIGN LANGUAGE ───── -->
+  <div class="project-section" id="signlang">
+    <h2 class="section-title">🤟 Sign Language Detection & Recognition <span class="badge research">IEEE Published</span><span class="badge ml">ML</span></h2>
+
+    <div class="project-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">CNN-based Gesture Recognition from Live Video</h3>
+          <p style="margin:4px 0 0;font-size:12px;">Python · PyTorch · OpenCV · C++ · PCNN features · Temporal aggregation</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="tag purple">PyTorch</span><span class="tag blue">OpenCV</span><span class="tag orange">CNN</span><span class="tag green">C++</span>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <p><strong>What it is:</strong> A gesture recognition system that takes live webcam video and classifies American Sign Language gestures in real time. Published at the 2023 IEEE ICSSCS conference.</p>
+
+        <h4 style="color:var(--orange);margin:18px 0 8px;">ML Pipeline Architecture</h4>
+        <div class="arch-box">
+[Webcam input]
+    |  OpenCV — VideoCapture, frame-by-frame reading
+    v
+[Preprocessing]
+    |  Resize frames to fixed size (e.g. 224×224)
+    |  Convert BGR → grayscale / RGB normalization
+    |  Hand region extraction (bounding box)
+    v
+[PCNN Feature Extraction]  ← C++ accelerated
+    |  Phase Congruency Neural Network
+    |  Detects edges/contours invariant to brightness changes
+    |  Extracts spatial features that generalize across lighting
+    v
+[CNN Model  (PyTorch)]
+    |  Convolutional layers → feature maps
+    |  Pooling layers → spatial downsampling
+    |  Fully connected layers → class probabilities
+    |  Softmax output → gesture label
+    v
+[Temporal Aggregation]
+    |  Combines predictions across N consecutive frames
+    |  Smooths out single-frame noise
+    |  Outputs stable gesture classification
+    v
+[Output]
+    |  Gesture label displayed on frame via OpenCV overlay</div>
+
+        <h4 style="color:var(--orange);margin:18px 0 8px;">End-to-End Flow</h4>
+        <div class="flow">
+          <div class="flow-step"><div class="step-num">1</div><div class="step-text"><strong>Frame captured</strong> — <code>cv2.VideoCapture(0)</code> grabs each frame from webcam. OpenCV is a C++ library with Python bindings — fast enough for real-time processing.</div></div>
+          <div class="flow-step"><div class="step-num">2</div><div class="step-text"><strong>Preprocessing</strong> — frame resized, normalized, hand region isolated. This ensures the model sees consistent input regardless of camera distance or position.</div></div>
+          <div class="flow-step"><div class="step-num">3</div><div class="step-text"><strong>PCNN feature extraction</strong> — Phase Congruency Neural Network extracts edge/contour features that are invariant to lighting changes. C++ used here for speed since this runs on every frame.</div></div>
+          <div class="flow-step"><div class="step-num">4</div><div class="step-text"><strong>CNN inference</strong> — extracted features passed through the PyTorch CNN model. Convolutional layers detect low-level patterns (edges, curves), deeper layers detect high-level patterns (finger positions, hand shapes). <code>torch.no_grad()</code> used during inference for speed.</div></div>
+          <div class="flow-step"><div class="step-num">5</div><div class="step-text"><strong>Temporal aggregation</strong> — predictions from last N frames are pooled (e.g. majority vote or average). Prevents flickering output when a single frame is ambiguous mid-gesture.</div></div>
+          <div class="flow-step"><div class="step-num">6</div><div class="step-text"><strong>Result displayed</strong> — <code>cv2.putText()</code> overlays the predicted label on the frame. <code>cv2.imshow()</code> renders it in a window at real-time frame rate.</div></div>
+        </div>
+
+        <div class="sub-grid">
+          <div class="sub-card">
+            <h4>What is PCNN?</h4>
+            <ul>
+              <li><strong>Phase Congruency</strong> — measures where image intensity waves are in phase (edge locations)</li>
+              <li>Unlike gradient-based edges (Sobel), PC is <strong>invariant to contrast and brightness</strong></li>
+              <li>Better for real-world video where lighting varies</li>
+              <li>Extracts the geometric structure of a gesture, not its pixel values</li>
+            </ul>
+          </div>
+          <div class="sub-card">
+            <h4>Why C++ here?</h4>
+            <ul>
+              <li>PCNN feature extraction is compute-heavy — runs per-frame</li>
+              <li>Python would create too much latency for real-time video</li>
+              <li>C++ module called from Python via bindings (ctypes or pybind11)</li>
+              <li>PyTorch handles the GPU-accelerated CNN; C++ handles CPU preprocessing</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight">💬 Recruiter talking point: "We used PCNN features specifically because standard CNN inputs are sensitive to lighting — in a real-world sign language scenario, lighting changes constantly. PCNN extracts structural features that stay consistent. The IEEE paper validates our accuracy across those varied conditions."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────── RESUME BUILDER ───── -->
+  <div class="project-section" id="resumebuilder">
+    <h2 class="section-title">📄 Resume Builder Web Application</h2>
+
+    <div class="project-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Django Web App — Profile → Auto-Generated PDF Resume</h3>
+          <p style="margin:4px 0 0;font-size:12px;">Python · Django · SQLite · ReportLab · HTML/CSS · React (in-browser)</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="tag green">Django</span><span class="tag blue">ReportLab</span><span class="tag orange">SQLite</span>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <p><strong>What it is:</strong> A Django web app where students register, fill in their academic and work profile across multiple sections, and download a formatted PDF resume. Admin can post job notifications with required skills for students to browse.</p>
+
+        <h4 style="color:var(--orange);margin:18px 0 8px;">Architecture</h4>
+        <div class="arch-box">
+[Browser — HTML/CSS + React (in-browser Babel)]
+    |  Multi-tab form: Personal, Education, Skills, Projects, Experience
+    |  API calls to Django endpoints
+    v
+[Django Backend]
+    |  Session-based authentication (Django sessions)
+    |  Views: registration, login, profile_update, download_pdf
+    |  Django ORM → SQLite
+    |  PDF generation: ReportLab Platypus SimpleDocTemplate
+    v
+[SQLite Database]
+    |  Tables: UserModel (all profile fields), NotificationModel (job posts)
+    |  pic field: FileField — stores uploaded photo to /images/
+    v
+[ReportLab PDF Engine]
+    |  Fetches user data from DB
+    |  Builds PDF: header with photo, sections, skills grid, projects
+    |  Returns as FileResponse — browser downloads directly</div>
+
+        <h4 style="color:var(--orange);margin:18px 0 8px;">End-to-End Flow</h4>
+        <div class="flow">
+          <div class="flow-step"><div class="step-num">1</div><div class="step-text"><strong>Register</strong> — user fills registration form including uploading a photo. Django's <code>FileField</code> saves photo to <code>MEDIA_ROOT/images/</code>. User record created in SQLite via <code>UserModel.save()</code>.</div></div>
+          <div class="flow-step"><div class="step-num">2</div><div class="step-text"><strong>Login</strong> — Django validates credentials, creates a session. <code>request.session['user_id']</code> set. CSRF token sent with every subsequent form submission.</div></div>
+          <div class="flow-step"><div class="step-num">3</div><div class="step-text"><strong>Fill profile</strong> — React frontend tabs POST to <code>/api/profile/update/</code>. Django view updates all fields on the UserModel record. Data persists to SQLite via Django ORM.</div></div>
+          <div class="flow-step"><div class="step-num">4</div><div class="step-text"><strong>Download PDF</strong> — user clicks download → GET <code>/api/download/</code> → Django fetches UserModel from DB → passes all fields into ReportLab → PDF built in memory using <code>SimpleDocTemplate</code> with Platypus flowables (Paragraphs, Tables, Images) → returned as <code>FileResponse</code>.</div></div>
+          <div class="flow-step"><div class="step-num">5</div><div class="step-text"><strong>Admin notifications</strong> — admin logs into Django admin panel → posts job notifications with required skills → students see them in their dashboard as job alerts.</div></div>
+        </div>
+
+        <div class="sub-grid">
+          <div class="sub-card">
+            <h4>What is ReportLab?</h4>
+            <ul>
+              <li>Python PDF generation library — creates PDFs entirely in code</li>
+              <li><strong>Platypus</strong> = page layout engine (like CSS for PDFs)</li>
+              <li><strong>Flowables</strong> = building blocks: Paragraph, Table, Image, Spacer</li>
+              <li><strong>SimpleDocTemplate</strong> = handles page size, margins, auto-pagination</li>
+              <li>No browser/template involved — pure programmatic PDF layout</li>
+            </ul>
+          </div>
+          <div class="sub-card">
+            <h4>Security</h4>
+            <ul>
+              <li><strong>CSRF protection</strong> — Django's middleware blocks cross-site form submissions</li>
+              <li><strong>Session auth</strong> — each request validated via server-side session</li>
+              <li><strong>File upload validation</strong> — only image types accepted for profile photo</li>
+              <li><strong>Django admin</strong> — role-separated, only superusers can access</li>
+              <li><strong>ORM</strong> — all DB queries parameterized, SQL injection prevented</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────── ATTENDANCE ───── -->
+  <div class="project-section" id="attendance">
+    <h2 class="section-title">📸 Attendance Management System <span class="badge ml">ML · Computer Vision</span></h2>
+
+    <div class="project-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Face Recognition Attendance — MTCNN + FaceNet + SVM</h3>
+          <p style="margin:4px 0 0;font-size:12px;">Python · TensorFlow · PyTorch · OpenCV · MTCNN · FaceNet · SVM · Tkinter · openpyxl</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="tag purple">FaceNet</span><span class="tag blue">MTCNN</span><span class="tag orange">SVM</span><span class="tag green">OpenCV</span>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <p><strong>What it is:</strong> A desktop application that uses your webcam to automatically identify students' faces and mark their attendance in an Excel file. Works under varied lighting conditions. Built a full ML pipeline from dataset collection through training to real-time inference.</p>
+
+        <h4 style="color:var(--orange);margin:18px 0 8px;">ML Pipeline Architecture</h4>
+        <div class="arch-box">
+PHASE 1 — DATASET CREATION
+[Tkinter GUI]
+    |  Admin enters student name/ID
+    v
+[OpenCV — webcam capture]
+    |  Captures ~100 face images per student
+    v
+[MTCNN — face detection]
+    |  Detects face bounding box in each frame
+    |  Crops + aligns face to 160×160 pixels
+    v
+[Saved to disk: /dataset/{student_name}/face_001.jpg ...]
+
+PHASE 2 — MODEL TRAINING
+[For each saved face image]
+    |
+    v
+[FaceNet — pretrained CNN (TensorFlow/PyTorch)]
+    |  Encodes face → 128-dimensional embedding vector
+    |  Same person → embeddings cluster close together
+    |  Different people → embeddings far apart
+    v
+[SVM Classifier trained on embeddings]
+    |  Input: 128-d embedding vector
+    |  Output: student label
+    |  Trained on all students' embeddings
+    v
+[Model saved: svm_model.pkl]
+
+PHASE 3 — REAL-TIME RECOGNITION
+[Webcam frame]
+    → MTCNN detects face → crops it
+    → FaceNet generates embedding
+    → SVM predicts: "Ajay Thota" (confidence %)
+    → If confidence > threshold: mark attendance
+    → Write name + timestamp → Excel file (openpyxl)</div>
+
+        <h4 style="color:var(--orange);margin:18px 0 8px;">End-to-End Flow</h4>
+        <div class="flow">
+          <div class="flow-step"><div class="step-num">1</div><div class="step-text"><strong>Dataset creation</strong> — Tkinter GUI collects student name → OpenCV opens webcam → captures ~100 images while student moves slightly → MTCNN finds and crops face in each image → saved to <code>/dataset/StudentName/</code>.</div></div>
+          <div class="flow-step"><div class="step-num">2</div><div class="step-text"><strong>FaceNet embedding</strong> — each saved face image fed into the pretrained FaceNet model. FaceNet outputs a <strong>128-dimensional vector</strong> (embedding) — a numerical fingerprint of that face. Same person always produces similar vectors.</div></div>
+          <div class="flow-step"><div class="step-num">3</div><div class="step-text"><strong>SVM training</strong> — all embeddings labeled with student names. <code>SVC(kernel='rbf')</code> from scikit-learn trained to classify embedding vectors to identities. This is fast to train because FaceNet already did the heavy lifting.</div></div>
+          <div class="flow-step"><div class="step-num">4</div><div class="step-text"><strong>Real-time recognition</strong> — webcam streams frames → MTCNN detects face box → crops to 160×160 → FaceNet generates embedding → SVM predicts name + confidence score → if confidence above threshold (e.g. 0.7), accepted as valid identification.</div></div>
+          <div class="flow-step"><div class="step-num">5</div><div class="step-text"><strong>Attendance recording</strong> — confirmed identity + current timestamp written to Excel file via <code>openpyxl</code>. Duplicate logic prevents same student being marked twice in one session.</div></div>
+        </div>
+
+        <div class="sub-grid">
+          <div class="sub-card">
+            <h4>MTCNN — What & Why</h4>
+            <ul>
+              <li><strong>Multi-task Cascaded CNN</strong> — 3 networks in sequence</li>
+              <li>Stage 1 (P-Net): fast scan for candidate face regions</li>
+              <li>Stage 2 (R-Net): refines candidates, rejects false positives</li>
+              <li>Stage 3 (O-Net): precise bounding box + facial landmarks</li>
+              <li>Why: accurate under varied lighting, angles, partial occlusion</li>
+            </ul>
+          </div>
+          <div class="sub-card">
+            <h4>FaceNet — What & Why</h4>
+            <ul>
+              <li>Pretrained deep CNN (Inception-ResNet architecture)</li>
+              <li>Maps face → 128-dimensional Euclidean space</li>
+              <li>Trained with <strong>Triplet Loss</strong>: same person closer, different people farther</li>
+              <li>Why pretrained: would need millions of faces to train from scratch — we fine-tune/use as feature extractor</li>
+              <li>SVM on top = fast to retrain when adding new students</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="highlight">💬 Recruiter talking point: "I split the ML work deliberately — FaceNet handles the hard problem (face representation) as a pretrained model, and SVM handles classification. This means adding a new student just requires generating their embeddings and retraining the SVM in seconds, not retraining a full neural network."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────── E-LEARNING ───── -->
+  <div class="project-section" id="elearning">
+    <h2 class="section-title">📊 E-Learning Impact Analysis <span class="badge research">Published Paper</span></h2>
+
+    <div class="project-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Data Analysis — How Online Learning Affects Student Performance</h3>
+          <p style="margin:4px 0 0;font-size:12px;">Python · Pandas · Matplotlib · Jupyter Notebook · Kaggle Dataset</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="tag orange">Pandas</span><span class="tag blue">Matplotlib</span><span class="tag green">Jupyter</span>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <p><strong>What it is:</strong> A data science case study analyzing how factors like online attendance, residency, diet, and fitness affect academic performance. Findings published at a national conference.</p>
+
+        <h4 style="color:var(--orange);margin:18px 0 8px;">Pipeline</h4>
+        <div class="arch-box">
+[Kaggle Dataset — CSV]
+    |  Load with pandas.read_csv()
+    v
+[Data Cleaning]
+    |  Handle missing values (dropna / fillna)
+    |  Encode categorical variables (LabelEncoder)
+    |  Normalize numeric columns
+    v
+[Exploratory Data Analysis]
+    |  df.describe() — summary statistics
+    |  df.corr() — correlation matrix
+    |  Identify relationships between variables
+    v
+[Visualization — Matplotlib]
+    |  Bar charts: attendance vs GPA
+    |  Heatmap: correlation matrix
+    |  Box plots: GPA distribution by residency type
+    v
+[Insights + Paper]
+    |  Online attendance correlated with performance drop
+    |  Students with active lifestyles performed better
+    |  Published findings at National Conference</div>
+
+        <div class="sub-grid">
+          <div class="sub-card">
+            <h4>Pandas — Core Operations Used</h4>
+            <ul>
+              <li><code>read_csv()</code> — load dataset</li>
+              <li><code>groupby().mean()</code> — average GPA by category</li>
+              <li><code>corr()</code> — correlation coefficients between columns</li>
+              <li><code>value_counts()</code> — frequency distributions</li>
+              <li><code>dropna() / fillna()</code> — handle missing data</li>
+            </ul>
+          </div>
+          <div class="sub-card">
+            <h4>Key Insights Extracted</h4>
+            <ul>
+              <li>Online-only students showed measurable GPA decline vs hybrid</li>
+              <li>Fitness/exercise frequency positively correlated with academic output</li>
+              <li>Students in hostels outperformed day scholars in online setting</li>
+              <li>Dietary habits showed weak but positive correlation with focus scores</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────── F1 APP ───── -->
+  <div class="project-section" id="f1app">
+    <h2 class="section-title">🏎️ F1 Live App</h2>
+    <div class="project-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Full-Stack F1 Portal — Spring Boot + Vanilla JS</h3>
+          <p style="margin:4px 0 0;font-size:12px;">Java 17 · Spring Boot · MySQL · Spring Security · JWT · JavaMailSender · AI Chatbot</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="tag blue">Spring Boot</span><span class="tag orange">MySQL</span><span class="tag green">JWT</span>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <p><strong>What it is:</strong> An F1 fan portal with live driver/team/standings data, circuit simulator, JWT-based user auth, automated weekly race digest emails, and an AI chatbot.</p>
+
+        <h4 style="color:var(--orange);margin:18px 0 8px;">Architecture</h4>
+        <div class="arch-box">
+[Vanilla JS + HTML/CSS — Frontend]
+    |  Fetches data from Spring Boot REST endpoints
+    |  JWT token stored in localStorage after login
+    |  Light/dark mode toggle (localStorage)
+    v
+[Spring Boot — Backend]
+    |  @RestController endpoints: /api/drivers, /api/standings, /api/chat/ask
+    |  Spring Security filter chain: validates JWT on protected routes
+    |  @Scheduled task: runs every Friday 6PM → sends digest email
+    |  JavaMailSender → Gmail SMTP
+    v
+[MySQL Database]
+    |  Users table (hashed passwords — BCrypt)
+    |  Drivers, Teams, Standings tables
+    |  JWT tokens (or stateless — validated by secret key)
+    v
+[JavaMailSender]
+    |  Gmail SMTP with App Password
+    |  Welcome email on register
+    |  Weekly race digest (Friday 6PM @Scheduled)</div>
+
+        <div class="sub-grid">
+          <div class="sub-card">
+            <h4>JWT Auth — How It Works</h4>
+            <ul>
+              <li>User logs in → Spring generates signed JWT with user ID + expiry</li>
+              <li>JWT returned to browser, stored in localStorage</li>
+              <li>Every request: JS attaches <code>Authorization: Bearer &lt;token&gt;</code></li>
+              <li>Spring Security filter intercepts → verifies signature → extracts user</li>
+              <li>Stateless — no session table needed in DB</li>
+            </ul>
+          </div>
+          <div class="sub-card">
+            <h4>@Scheduled Emails</h4>
+            <ul>
+              <li>Spring's <code>@Scheduled(cron = "0 0 18 * * FRI")</code> annotation</li>
+              <li>Runs automatically every Friday at 6PM</li>
+              <li>Fetches upcoming races from <code>f1-data.json</code></li>
+              <li>Builds HTML email body, sends via Gmail SMTP</li>
+              <li>Gmail App Password used (not account password — security best practice)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ───────────────────────────────────── ML BREAKDOWN ───── -->
+  <div class="project-section" id="ml-breakdown">
+    <h2 class="section-title">🧠 What ML Do I Actually Have?</h2>
+    <p style="margin-bottom:20px;">Not all "ML experience" is equal. Here's an honest breakdown of what level each project sits at — so you know exactly what to lead with when a recruiter asks.</p>
+
+    <div class="sub-grid" style="grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px;">
+      <div class="sub-card" style="border-color:rgba(63,185,80,0.4);">
+        <h4 style="color:var(--green);">✅ Real ML Pipelines</h4>
+        <ul>
+          <li>Built end-to-end from data collection to inference</li>
+          <li>You understand every step — not just calling a library</li>
+          <li><strong>Attendance System</strong></li>
+          <li><strong>Sign Language Detection</strong></li>
+        </ul>
+      </div>
+      <div class="sub-card" style="border-color:rgba(88,166,255,0.4);">
+        <h4 style="color:var(--blue);">⚡ ML Systems Integration</h4>
+        <ul>
+          <li>Used ML APIs in production systems you architected</li>
+          <li>Not model building — but real engineering around AI</li>
+          <li><strong>HelperKit</strong> (Deepgram + OpenAI)</li>
+          <li><strong>Career Command Center</strong> (AI resume tailor)</li>
+        </ul>
+      </div>
+      <div class="sub-card" style="border-color:rgba(210,153,34,0.4);">
+        <h4 style="color:var(--orange);">📊 Data Science / Analysis</h4>
+        <ul>
+          <li>Statistical analysis, visualization, insights</li>
+          <li>No model trained — data wrangling and EDA</li>
+          <li><strong>E-Learning Impact Analysis</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Tier 1 -->
+    <div class="project-card" style="margin-bottom:16px;">
+      <div class="card-header">
+        <div><h3 class="card-title">Tier 1 — Full ML Pipeline Engineering</h3><p style="margin-top:4px;font-size:12px;">Lead with these when asked about ML experience</p></div>
+        <span class="tag green">Strongest ML Proof</span>
+      </div>
+      <div class="card-body">
+        <div class="sub-grid">
+          <div class="sub-card">
+            <h4>Attendance System — What makes it real ML</h4>
+            <ul>
+              <li><strong>Data collection</strong> — built the pipeline to capture and label your own dataset using Tkinter + OpenCV</li>
+              <li><strong>Feature extraction</strong> — MTCNN detects + aligns faces, FaceNet converts them to 128-d embeddings</li>
+              <li><strong>Model training</strong> — SVM trained on those embeddings to map vectors → student identities</li>
+              <li><strong>Inference pipeline</strong> — real-time webcam → detect → embed → classify → log attendance</li>
+              <li><strong>Edge cases handled</strong> — confidence threshold to reject uncertain predictions, varied lighting conditions</li>
+              <li>You understand WHY FaceNet + SVM: FaceNet does the hard representation learning, SVM is fast to retrain when adding new students</li>
+            </ul>
+          </div>
+          <div class="sub-card">
+            <h4>Sign Language Detection — What makes it research ML</h4>
+            <ul>
+              <li><strong>Custom CNN architecture</strong> — built and trained in PyTorch, not just using a pretrained model</li>
+              <li><strong>PCNN features</strong> — chose Phase Congruency over standard gradients specifically for lighting invariance</li>
+              <li><strong>Temporal aggregation</strong> — solved the frame-level noise problem with sequence-level smoothing</li>
+              <li><strong>C++ integration</strong> — performance-critical preprocessing in C++ for real-time viability</li>
+              <li><strong>IEEE published</strong> — peer-reviewed validation of the approach at ICSSCS 2023</li>
+              <li>This is research-level: you identified a problem (lighting sensitivity), chose a technically justified solution (PCNN), validated it experimentally</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tier 2 -->
+    <div class="project-card" style="margin-bottom:16px;">
+      <div class="card-header">
+        <div><h3 class="card-title">Tier 2 — ML Systems Integration (Production)</h3><p style="margin-top:4px;font-size:12px;">Frame as "architecting systems that use ML" — equally valuable for SWE roles</p></div>
+        <span class="tag blue">Production Experience</span>
+      </div>
+      <div class="card-body">
+        <div class="sub-grid">
+          <div class="sub-card">
+            <h4>HelperKit — AI in Production</h4>
+            <ul>
+              <li>Deepgram STT: streaming audio → real-time text at sub-200ms latency</li>
+              <li>OpenAI: full session transcript → structured summary</li>
+              <li>Engineering challenge: how to route audio efficiently so latency stays low</li>
+              <li>How to say it: <em>"I built the real-time infrastructure around ML models — WebSocket streaming, concurrent user handling, Firebase fan-out — so the AI could run at production scale"</em></li>
+            </ul>
+          </div>
+          <div class="sub-card">
+            <h4>Career Command Center — AI Feature</h4>
+            <ul>
+              <li>AI resume tailoring: takes user's existing bullets + job description → returns rewritten bullets</li>
+              <li>Prompt engineering: structured the prompt so the AI output is consistent and usable</li>
+              <li>Security: API key server-side only, never exposed to Angular frontend</li>
+              <li>How to say it: <em>"I integrated an AI tailoring feature as an internal API endpoint — the user never touches the model directly, it goes through my Django backend"</em></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- What to say -->
+    <div class="project-card">
+      <div class="card-header">
+        <div><h3 class="card-title">💬 How to Answer "Tell Me About Your ML Experience"</h3></div>
+      </div>
+      <div class="card-body">
+        <div class="flow">
+          <div class="flow-step">
+            <div class="step-num">1</div>
+            <div class="step-text"><strong>Open with the pipeline work:</strong> "I've built two end-to-end ML systems. The strongest is a face recognition attendance system — I collected my own dataset, used MTCNN for face detection, FaceNet for 128-dimensional embeddings, and trained an SVM classifier on top for identity recognition in real time."</div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">2</div>
+            <div class="step-text"><strong>Add the research angle:</strong> "I also built a sign language gesture recognizer using a custom PyTorch CNN with PCNN features for lighting invariance — that work was published at IEEE ICSSCS 2023."</div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">3</div>
+            <div class="step-text"><strong>Show production ML:</strong> "On the engineering side, I've integrated ML APIs into production systems — built HelperKit which streams audio to Deepgram for sub-200ms live captions and uses OpenAI for session summaries, deployed on AWS EC2."</div>
+          </div>
+          <div class="flow-step">
+            <div class="step-num">4</div>
+            <div class="step-text"><strong>If they ask about specific frameworks:</strong> PyTorch for building/training models (Sign Language, FaceNet inference). TensorFlow for loading pretrained FaceNet weights. OpenCV for all computer vision input/preprocessing. scikit-learn for SVM. Pandas/Matplotlib for data analysis.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ───────────────────────────────────── GLOSSARY ───── -->
+  <div class="glossary-section" id="glossary-langs">
+    <h2 class="section-title">📖 Every Resume Term — Explained + Where Used</h2>
+    <p style="margin-bottom:20px;">Every technical word from your resume, what it actually means, and exactly which project you used it in.</p>
+
+    <input id="search" type="text" placeholder="Search terms... (e.g. JWT, MTCNN, PostgreSQL)" oninput="filterTerms(this.value)" />
+
+    <h3 style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:14px;">Languages</h3>
+    <div class="term-grid" id="term-grid">
+
+      <div class="term-card" data-term="python">
+        <div class="term-name">Python</div>
+        <div class="term-what">General-purpose language. In ML/data work it's the dominant language due to its library ecosystem (NumPy, PyTorch, Pandas, Django).</div>
+        <div class="term-where">Used in: <span>Career Command Center</span><span>Resume Builder</span><span>Attendance System</span><span>Sign Language Detection</span><span>E-Learning Analysis</span></div>
+      </div>
+
+      <div class="term-card" data-term="java">
+        <div class="term-name">Java</div>
+        <div class="term-what">Statically typed, compiled OOP language. Strong choice for enterprise backends. Spring Boot is built on top of Java.</div>
+        <div class="term-where">Used in: <span>F1 App (Spring Boot backend)</span></div>
+      </div>
+
+      <div class="term-card" data-term="javascript">
+        <div class="term-name">JavaScript</div>
+        <div class="term-what">The language of the web browser. Also runs on the server via Node.js. Dynamically typed, event-driven.</div>
+        <div class="term-where">Used in: <span>HelperKit (Node.js server)</span><span>F1 App (vanilla JS frontend)</span><span>Resume Builder (React in-browser)</span></div>
+      </div>
+
+      <div class="term-card" data-term="typescript">
+        <div class="term-name">TypeScript</div>
+        <div class="term-what">JavaScript with static types. Catches bugs at compile time. Angular 17 is built entirely in TypeScript — all components and services you write in Angular ARE TypeScript.</div>
+        <div class="term-where">Used in: <span>Career Command Center (Angular 17)</span></div>
+      </div>
+
+      <div class="term-card" data-term="c cpp">
+        <div class="term-name">C / C++</div>
+        <div class="term-what">Low-level, fast languages. C++ used for performance-critical code that Python would be too slow for — like per-frame video processing.</div>
+        <div class="term-where">Used in: <span>Sign Language Detection (PCNN feature extraction)</span></div>
+      </div>
+
+      <div class="term-card" data-term="sql">
+        <div class="term-name">SQL</div>
+        <div class="term-what">Structured Query Language — the standard way to interact with relational databases. SELECT, INSERT, UPDATE, DELETE, JOINs. ORMs like Django ORM generate SQL for you under the hood.</div>
+        <div class="term-where">Used in: <span>Career Command Center (PostgreSQL)</span><span>Resume Builder (SQLite)</span><span>F1 App (MySQL)</span></div>
+      </div>
+
+    </div>
+
+    <h3 style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:0.08em;margin:24px 0 14px;" id="glossary-frameworks">Frameworks</h3>
+    <div class="term-grid">
+
+      <div class="term-card" data-term="django">
+        <div class="term-name">Django</div>
+        <div class="term-what">Python web framework. Includes ORM, admin panel, auth, CSRF protection, URL routing, templating — "batteries included." Django REST Framework (DRF) extends it to build REST APIs.</div>
+        <div class="term-where">Used in: <span>Career Command Center (DRF API)</span><span>Resume Builder (full web app)</span></div>
+      </div>
+
+      <div class="term-card" data-term="react">
+        <div class="term-name">React.js</div>
+        <div class="term-what">JavaScript library for building UIs with components. Virtual DOM diffs and re-renders only changed parts. State management via hooks (useState, useEffect).</div>
+        <div class="term-where">Used in: <span>HelperKit (full frontend)</span><span>Resume Builder (in-browser component)</span></div>
+      </div>
+
+      <div class="term-card" data-term="nodejs node">
+        <div class="term-name">Node.js</div>
+        <div class="term-what">JavaScript runtime built on Chrome's V8 engine — runs JS outside the browser. Event-driven, non-blocking I/O — ideal for real-time apps with many concurrent connections (like WebSocket servers).</div>
+        <div class="term-where">Used in: <span>HelperKit (WebSocket + Express server)</span></div>
+      </div>
+
+      <div class="term-card" data-term="fastapi">
+        <div class="term-name">FastAPI</div>
+        <div class="term-what">Modern Python web framework for building APIs. Faster than Django REST for pure API work. Auto-generates OpenAPI docs, uses Python type hints for validation. Async support built-in.</div>
+        <div class="term-where">Used in: <span>Skills (available for API projects requiring async/high performance)</span></div>
+      </div>
+
+      <div class="term-card" data-term="spring boot springboot">
+        <div class="term-name">Spring Boot</div>
+        <div class="term-what">Java framework for building production-ready web applications. Auto-configures common setups. Includes Spring Security (auth), Spring Data JPA (ORM), Spring Mail, Spring Scheduler.</div>
+        <div class="term-where">Used in: <span>F1 App (REST API, JWT auth, email, scheduled tasks)</span></div>
+      </div>
+
+      <div class="term-card" data-term="angular">
+        <div class="term-name">Angular</div>
+        <div class="term-what">TypeScript-based frontend framework by Google. Full MVC — Components, Services, Routing, HTTP Client, RxJS observables. More structured than React — enforces patterns.</div>
+        <div class="term-where">Used in: <span>Career Command Center (SPA frontend)</span></div>
+      </div>
+
+      <div class="term-card" data-term="pytorch">
+        <div class="term-name">PyTorch</div>
+        <div class="term-what">Deep learning framework. Define neural networks as Python classes, train with autograd (automatic differentiation). Dynamic computation graph — easier to debug than TensorFlow 1.x.</div>
+        <div class="term-where">Used in: <span>Sign Language Detection (CNN model)</span><span>Attendance System (FaceNet inference)</span></div>
+      </div>
+
+      <div class="term-card" data-term="tensorflow">
+        <div class="term-name">TensorFlow</div>
+        <div class="term-what">Google's deep learning framework. Keras is its high-level API. Used for loading pretrained models efficiently — FaceNet pretrained weights available in TF format.</div>
+        <div class="term-where">Used in: <span>Attendance System (FaceNet pretrained model loading)</span></div>
+      </div>
+
+    </div>
+
+    <h3 style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:0.08em;margin:24px 0 14px;" id="glossary-tools">Developer Tools</h3>
+    <div class="term-grid">
+
+      <div class="term-card" data-term="git">
+        <div class="term-name">Git</div>
+        <div class="term-what">Distributed version control. Tracks every change, enables branching for features, merging, rollbacks. GitHub hosts the remote repo. Commands: commit, push, pull, branch, merge, rebase.</div>
+        <div class="term-where">Used in: <span>All projects</span><span>GitHub: ajay062002</span></div>
+      </div>
+
+      <div class="term-card" data-term="docker">
+        <div class="term-name">Docker</div>
+        <div class="term-what">Containerization tool. Packages app + all dependencies into a container image that runs identically on any machine. Eliminates "works on my machine" problems. Dockerfile defines the image.</div>
+        <div class="term-where">Used in: <span>Skill for containerizing Django/Node apps for deployment</span></div>
+      </div>
+
+      <div class="term-card" data-term="opencv">
+        <div class="term-name">OpenCV</div>
+        <div class="term-what">Open-source computer vision library (C++ core, Python bindings). Webcam access, image read/write, resize, color conversion, drawing, video processing. The standard tool for any vision pipeline.</div>
+        <div class="term-where">Used in: <span>Attendance System (webcam input, face capture)</span><span>Sign Language Detection (video frames)</span></div>
+      </div>
+
+      <div class="term-card" data-term="postman">
+        <div class="term-name">Postman</div>
+        <div class="term-what">API testing tool. Send HTTP requests (GET, POST, PATCH, DELETE), inspect responses, test auth headers, set up test collections. Used during development to verify API endpoints before connecting a frontend.</div>
+        <div class="term-where">Used in: <span>Career Command Center (testing DRF endpoints)</span><span>HelperKit (testing Express endpoints)</span></div>
+      </div>
+
+      <div class="term-card" data-term="pytest">
+        <div class="term-name">Pytest</div>
+        <div class="term-what">Python testing framework. Write test functions, assert expected outputs. Django has pytest-django plugin for testing views, models, and API endpoints. Fixtures manage test state.</div>
+        <div class="term-where">Used in: <span>Backend testing for Django applications</span></div>
+      </div>
+
+      <div class="term-card" data-term="rest api">
+        <div class="term-name">REST APIs</div>
+        <div class="term-what">Architectural pattern for web APIs. Resources mapped to URLs. HTTP verbs express intent: GET (read), POST (create), PUT/PATCH (update), DELETE (remove). Stateless — each request self-contained.</div>
+        <div class="term-where">Used in: <span>Career Command Center (DRF)</span><span>HelperKit (Express)</span><span>F1 App (Spring Boot)</span></div>
+      </div>
+
+      <div class="term-card" data-term="websocket">
+        <div class="term-name">WebSocket</div>
+        <div class="term-what">Protocol for persistent, bidirectional connection between browser and server. Unlike HTTP (one request → one response), WebSocket keeps the connection open — server can push data anytime. Enables real-time features.</div>
+        <div class="term-where">Used in: <span>HelperKit (audio streaming from browser to Node.js server)</span></div>
+      </div>
+
+      <div class="term-card" data-term="nginx">
+        <div class="term-name">nginx</div>
+        <div class="term-what">High-performance web server / reverse proxy. Sits in front of your Node.js/Django app. Handles SSL termination, serves static files efficiently, forwards dynamic requests to the app server. Hides internal ports.</div>
+        <div class="term-where">Used in: <span>HelperKit deployment on AWS EC2</span></div>
+      </div>
+
+      <div class="term-card" data-term="pm2">
+        <div class="term-name">PM2</div>
+        <div class="term-what">Node.js process manager. Keeps your Node app running after crashes (auto-restart), manages logs, enables zero-downtime restarts. Equivalent of systemd/supervisor for Node processes.</div>
+        <div class="term-where">Used in: <span>HelperKit (production process management on EC2)</span></div>
+      </div>
+
+      <div class="term-card" data-term="reportlab">
+        <div class="term-name">ReportLab</div>
+        <div class="term-what">Python PDF generation library. Programmatically build PDFs with text, images, tables. Platypus layout engine handles page flow automatically. Used when you need to generate a PDF from data (not from HTML).</div>
+        <div class="term-where">Used in: <span>Resume Builder (PDF generation from user profile data)</span></div>
+      </div>
+
+    </div>
+
+    <h3 style="color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:0.08em;margin:24px 0 14px;" id="glossary-db">Databases & Cloud</h3>
+    <div class="term-grid">
+
+      <div class="term-card" data-term="postgresql postgres">
+        <div class="term-name">PostgreSQL</div>
+        <div class="term-what">Open-source relational database. More powerful than MySQL — better JSON support, window functions, more strict with data types. Standard choice for production Django apps.</div>
+        <div class="term-where">Used in: <span>Career Command Center (all application data)</span></div>
+      </div>
+
+      <div class="term-card" data-term="mysql">
+        <div class="term-name">MySQL</div>
+        <div class="term-what">Widely used open-source relational DB. Spring Boot + JPA works seamlessly with MySQL. Good performance for read-heavy apps.</div>
+        <div class="term-where">Used in: <span>F1 App (users, drivers, standings data)</span></div>
+      </div>
+
+      <div class="term-card" data-term="sqlite">
+        <div class="term-name">SQLite</div>
+        <div class="term-what">File-based SQL database — no server process needed. The entire DB is one .db file. Perfect for development and smaller apps. Django uses it by default.</div>
+        <div class="term-where">Used in: <span>Resume Builder (user profiles, notifications)</span></div>
+      </div>
+
+      <div class="term-card" data-term="firebase">
+        <div class="term-name">Firebase (Realtime DB)</div>
+        <div class="term-what">Google's NoSQL cloud database. Key feature: real-time sync — when data changes, all connected clients are notified instantly via WebSocket under the hood. No server code needed for broadcasting.</div>
+        <div class="term-where">Used in: <span>HelperKit (broadcasting live captions to all viewers)</span></div>
+      </div>
+
+      <div class="term-card" data-term="aws ec2 amazon">
+        <div class="term-name">AWS EC2</div>
+        <div class="term-what">Amazon's virtual machine service. Rent a Linux server in the cloud, deploy your app on it. Full control — you manage the OS, nginx, PM2, etc. Used for production deployments.</div>
+        <div class="term-where">Used in: <span>HelperKit (Node.js app hosted on EC2 instance)</span></div>
+      </div>
+
+      <div class="term-card" data-term="jwt token auth authentication">
+        <div class="term-name">JWT / Token Auth</div>
+        <div class="term-what">JSON Web Token — a signed, encoded string containing user identity claims. Server signs it with a secret. Client sends it on every request. Server verifies the signature — no DB lookup needed (stateless).</div>
+        <div class="term-where">Used in: <span>Career Command Center (DRF Token)</span><span>F1 App (Spring Security JWT)</span></div>
+      </div>
+
+      <div class="term-card" data-term="csrf">
+        <div class="term-name">CSRF Protection</div>
+        <div class="term-what">Cross-Site Request Forgery — attacker tricks your browser into making requests to a site you're logged into. Django generates a CSRF token per session; form submissions must include it. Invalid token = rejected request.</div>
+        <div class="term-where">Used in: <span>Resume Builder</span><span>Career Command Center</span></div>
+      </div>
+
+      <div class="term-card" data-term="ssl https lets encrypt">
+        <div class="term-name">SSL / HTTPS / Let's Encrypt</div>
+        <div class="term-what">SSL encrypts all traffic between browser and server. Let's Encrypt is a free certificate authority. Certbot tool auto-installs and auto-renews certs. Without HTTPS, passwords and data are sent in plaintext.</div>
+        <div class="term-where">Used in: <span>HelperKit (nginx + Let's Encrypt on EC2)</span><span>Career Command Center (Railway HTTPS)</span></div>
+      </div>
+
+      <div class="term-card" data-term="mtcnn face detection">
+        <div class="term-name">MTCNN</div>
+        <div class="term-what">Multi-task Cascaded Convolutional Network — detects faces in images with high accuracy. Returns bounding box + 5 facial landmarks (eyes, nose, mouth corners). Works well under varied conditions.</div>
+        <div class="term-where">Used in: <span>Attendance System (face detection before FaceNet embedding)</span></div>
+      </div>
+
+      <div class="term-card" data-term="facenet embedding face recognition">
+        <div class="term-name">FaceNet</div>
+        <div class="term-what">Deep CNN that maps faces to a 128-dimensional embedding space. Trained with triplet loss so same person's faces cluster near each other. Pretrained model — you use it as a feature extractor, then classify the embeddings.</div>
+        <div class="term-where">Used in: <span>Attendance System (generating face embeddings for SVM)</span></div>
+      </div>
+
+      <div class="term-card" data-term="svm support vector machine classifier">
+        <div class="term-name">SVM Classifier</div>
+        <div class="term-what">Support Vector Machine — finds the optimal hyperplane separating classes. Works well on high-dimensional inputs like 128-d face embeddings. Fast to train, fast to predict, doesn't need large datasets.</div>
+        <div class="term-where">Used in: <span>Attendance System (classifying face embeddings to student names)</span></div>
+      </div>
+
+      <div class="term-card" data-term="deepgram stt speech">
+        <div class="term-name">Deepgram STT API</div>
+        <div class="term-what">Speech-to-Text service. Accepts streaming audio, returns transcription in real-time. ML-based (deep learning acoustic models). Better latency than batch STT services because it processes audio as it streams in.</div>
+        <div class="term-where">Used in: <span>HelperKit (converting audio stream → text in real time)</span></div>
+      </div>
+
+      <div class="term-card" data-term="openai gpt ai">
+        <div class="term-name">OpenAI API</div>
+        <div class="term-what">Access to GPT models via API. Send a prompt, receive a completion. Used for tasks like summarization, generation, and rewriting text. Called server-side to protect the API key.</div>
+        <div class="term-where">Used in: <span>HelperKit (session transcript summarization)</span></div>
+      </div>
+
+      <div class="term-card" data-term="pandas dataframe data analysis">
+        <div class="term-name">Pandas</div>
+        <div class="term-what">Python data analysis library. DataFrame = in-memory table. Enables fast data manipulation: filtering, grouping, aggregating, merging datasets. The core tool for any data science work in Python.</div>
+        <div class="term-where">Used in: <span>E-Learning Analysis (dataset manipulation and stats)</span></div>
+      </div>
+
+      <div class="term-card" data-term="matplotlib visualization chart plot">
+        <div class="term-name">Matplotlib</div>
+        <div class="term-what">Python plotting library. Create line charts, bar charts, scatter plots, heatmaps, histograms. Output to PNG, PDF, or inline in Jupyter. The foundation of Python data visualization.</div>
+        <div class="term-where">Used in: <span>E-Learning Analysis (visualizing correlations and distributions)</span></div>
+      </div>
+
+      <div class="term-card" data-term="tkinter gui desktop">
+        <div class="term-name">Tkinter</div>
+        <div class="term-what">Python's built-in GUI toolkit. Creates desktop windows, buttons, labels, input fields. No installation needed — ships with Python. Sufficient for internal/admin tools.</div>
+        <div class="term-where">Used in: <span>Attendance System (dataset creation interface + recognition UI)</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Summary table -->
+  <div style="margin-bottom:56px;scroll-margin-top:80px;">
+    <h2 class="section-title">📋 Skills × Projects Matrix</h2>
+    <table>
+      <thead>
+        <tr><th>Skill</th><th>HelperKit</th><th>Career CC</th><th>Sign Lang</th><th>Resume Builder</th><th>Attendance</th><th>F1 App</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Python</td><td>—</td><td>✅ Django</td><td>✅ Core</td><td>✅ Core</td><td>✅ Core</td><td>—</td></tr>
+        <tr><td>Java</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>✅ Spring Boot</td></tr>
+        <tr><td>JavaScript</td><td>✅ Node.js</td><td>✅ Angular (TS)</td><td>—</td><td>✅ React</td><td>—</td><td>✅ Vanilla JS</td></tr>
+        <tr><td>TypeScript</td><td>—</td><td>✅ Angular</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>C/C++</td><td>—</td><td>—</td><td>✅ PCNN</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>Django / DRF</td><td>—</td><td>✅ API</td><td>—</td><td>✅ Web app</td><td>—</td><td>—</td></tr>
+        <tr><td>Spring Boot</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>✅ Backend</td></tr>
+        <tr><td>Angular</td><td>—</td><td>✅ Frontend</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>React.js</td><td>✅ Frontend</td><td>—</td><td>—</td><td>✅ In-browser</td><td>—</td><td>—</td></tr>
+        <tr><td>Node.js</td><td>✅ Server</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>PyTorch</td><td>—</td><td>—</td><td>✅ CNN model</td><td>—</td><td>✅ FaceNet</td><td>—</td></tr>
+        <tr><td>TensorFlow</td><td>—</td><td>—</td><td>—</td><td>—</td><td>✅ FaceNet</td><td>—</td></tr>
+        <tr><td>OpenCV</td><td>—</td><td>—</td><td>✅ Video</td><td>—</td><td>✅ Webcam</td><td>—</td></tr>
+        <tr><td>PostgreSQL</td><td>—</td><td>✅ DB</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>MySQL</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>✅ DB</td></tr>
+        <tr><td>SQLite</td><td>—</td><td>—</td><td>—</td><td>✅ DB</td><td>—</td><td>—</td></tr>
+        <tr><td>Firebase</td><td>✅ Realtime DB</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>AWS EC2</td><td>✅ Hosting</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>WebSocket</td><td>✅ Audio stream</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>JWT / Token Auth</td><td>—</td><td>✅ DRF Token</td><td>—</td><td>—</td><td>—</td><td>✅ JWT</td></tr>
+        <tr><td>REST APIs</td><td>✅ Express</td><td>✅ DRF</td><td>—</td><td>✅ Django</td><td>—</td><td>✅ Spring</td></tr>
+        <tr><td>SSL / nginx</td><td>✅ nginx + LE</td><td>✅ Railway</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+  function filterTerms(query) {
+    const q = query.toLowerCase();
+    document.querySelectorAll('.term-card').forEach(card => {
+      const text = card.dataset.term + ' ' + card.innerText.toLowerCase();
+      card.style.display = text.includes(q) ? '' : 'none';
+    });
+  }
+
+  // Active sidebar link on scroll
+  const sections = document.querySelectorAll('[id]');
+  const links = document.querySelectorAll('#sidebar a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    links.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>
